@@ -307,3 +307,12 @@ body {
   .result-cols, .form-row { grid-template-columns: 1fr; display: flex; flex-direction: column; }
   .call-row { flex-direction: column; align-items: stretch; }
 }
+
+/* ---- Replay + demo limits ---------------------------------------------- */
+.replay-wrap { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px; }
+.replay .banner { font-size: 12.5px; line-height: 1.5; }
+.replay-why { margin-top: 6px; color: var(--muted); }
+.replay .transcript pre { min-height: 260px; }
+.pin-row { margin-top: 14px; align-items: flex-end; }
+.pin-row input { letter-spacing: 0.18em; }
+.pin-err { font-size: 12px; color: #ff9b8a; align-self: center; }

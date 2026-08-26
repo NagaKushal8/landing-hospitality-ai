@@ -10,6 +10,7 @@ import { fetchCall } from '../_lib/voice.js'
 import { extractFromTranscript } from '../_lib/extract.js'
 import { applyFields } from '../_lib/apply.js'
 import { computeGaps, fieldByKey } from '../../shared/field-registry.js'
+import { reconcile } from '../_lib/budget.js'
 import { methodGuard, fail } from '../_lib/http.js'
 
 const TERMINAL = new Set(['ended', 'failed', 'busy', 'no-answer'])
@@ -45,6 +46,10 @@ export default async function handler(req, res) {
     }
 
     await updateCall(callId, { status: live.status, transcript: live.transcript })
+
+    // Vapi reports what the call actually cost. Swap it in for the up-front
+    // reservation so a short call does not keep holding a full one's budget.
+    if (typeof live.raw?.cost === 'number') await reconcile(callId, live.raw.cost)
 
     const home = await getHome(record.property_id)
     if (!home) return res.status(404).json({ error: `No property ${record.property_id}` })

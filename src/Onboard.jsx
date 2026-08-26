@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { enrichProperty, startCall, callStatus, reextract } from './api.js'
 import { FieldGrid, SourcePill } from './Field.jsx'
+import Replay from './Replay.jsx'
 
 const POLL_MS = 3000
 
@@ -21,6 +22,17 @@ const STATUS_COPY = {
   failed: 'Call failed',
   busy: 'Line was busy',
   'no-answer': 'No answer',
+}
+
+// Every one of these is a normal operating condition for a demo link that is
+// emailed and opened later, not a bug. They read as such.
+const FALLBACK_COPY = {
+  budget:
+    'This demo has a fixed spend ceiling and it has been reached, so live calls are off. Everything below is from a call that actually happened.',
+  'vapi-refused':
+    'The phone provider declined this call — a free number has a daily allowance and it is spent. Here is a call that already went through.',
+  'vapi-unconfigured': 'Live calling is not configured on this deployment. Here is a recorded call.',
+  'store-unconfigured': 'The database is not configured on this deployment, so results could not be saved. Here is a recorded call.',
 }
 
 function Step({ n, title, subtitle, done, active, children }) {
@@ -53,6 +65,13 @@ export default function Onboard({ onOpenHelp }) {
   const [result, setResult] = useState(null)
   const [transcript, setTranscript] = useState('')
   const [reextracting, setReextracting] = useState(false)
+  // Set when the backend declines to dial — daily allowance spent, budget
+  // ceiling reached, or Vapi refused. Carries a recording so the demo keeps
+  // going instead of stopping at an error.
+  const [replay, setReplay] = useState(null)
+  const [replayReason, setReplayReason] = useState(null)
+  const [pinPrompt, setPinPrompt] = useState(null)
+  const [pin, setPin] = useState('')
   const pollRef = useRef(null)
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -100,14 +119,41 @@ export default function Onboard({ onOpenHelp }) {
     }, POLL_MS)
   }
 
-  async function dial() {
+  async function dial(withPin) {
     if (!home || !phone.trim() || calling) return
     setCalling(true)
     setError(null)
     setResult(null)
     setTranscript('')
+    setReplay(null)
+    setReplayReason(null)
     try {
-      const res = await startCall({ homeId: home.id, phoneNumber: phone })
+      const res = await startCall({ homeId: home.id, phoneNumber: phone, pin: withPin })
+
+      // Past the daily allowance. Ask for the PIN, and show the recording
+      // meanwhile so there is something to look at either way.
+      if (res.needsPin) {
+        setPinPrompt(res)
+        setReplay(res.replay)
+        setReplayReason(
+          res.pinConfigured
+            ? `${res.today} of ${res.limit} calls used today. Enter the PIN from the email to place another, or watch a recorded call below.`
+            : `${res.today} of ${res.limit} calls used today, and no PIN is configured. Here is a recorded call instead.`
+        )
+        setCalling(false)
+        return
+      }
+
+      // Could not dial at all. Never an error box — the recording carries it.
+      if (res.fallback) {
+        setPinPrompt(null)
+        setReplay(res.replay)
+        setReplayReason(FALLBACK_COPY[res.fallback] || res.reason || 'A live call is not available right now.')
+        setCalling(false)
+        return
+      }
+
+      setPinPrompt(null)
       setCallId(res.callId)
       setStatus(res.status)
       poll(res.callId)
@@ -219,16 +265,46 @@ export default function Onboard({ onOpenHelp }) {
               Phone number
               <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 512 555 0164" disabled={calling} />
             </label>
-            <button onClick={dial} disabled={calling || !phone.trim()}>
+            <button onClick={() => dial()} disabled={calling || !phone.trim()}>
               {calling ? 'Calling…' : 'Start call'}
             </button>
           </div>
-          <p className="hint">Put in your own number to hear it — you play the property manager.</p>
+          <p className="hint">Put in your own number and answer it — you play the property manager.</p>
+
+          {pinPrompt?.pinConfigured && (
+            <form
+              className="call-row pin-row"
+              onSubmit={(e) => {
+                e.preventDefault()
+                dial(pin)
+              }}
+            >
+              <label>
+                PIN
+                <input
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                  placeholder="from the email"
+                  autoFocus
+                />
+              </label>
+              <button type="submit" disabled={!pin.trim()}>
+                Unlock call
+              </button>
+              {pinPrompt.wrongPin && <span className="pin-err">That PIN did not match.</span>}
+            </form>
+          )}
 
           {status && (
             <div className={`call-status ${calling ? 'live' : ''}`}>
               <span className="dot" />
               {STATUS_COPY[status] || status}
+            </div>
+          )}
+
+          {replay && (
+            <div className="replay-wrap">
+              <Replay replay={replay} reason={replayReason} />
             </div>
           )}
         </Step>

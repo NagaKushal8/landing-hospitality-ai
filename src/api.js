@@ -81,6 +81,7 @@ export const enrichProperty = (payload) => post('/api/onboard/enrich', payload)
 export const startCall = (payload) => post('/api/onboard/call', payload)
 export const reextract = (callId) => post('/api/onboard/reextract', { callId })
 export const callStatus = (callId) => get(`/api/onboard/call-status?callId=${encodeURIComponent(callId)}`)
+export const fetchReplay = () => get('/api/onboard/replay')
 
 // ---- Offline fallbacks -----------------------------------------------------
 

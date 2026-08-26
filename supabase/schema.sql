@@ -36,3 +36,20 @@ create index if not exists calls_property_id_idx on calls (property_id);
 -- then read nothing at all.
 alter table properties enable row level security;
 alter table calls      enable row level security;
+
+-- Append-only spend ledger. The demo link goes out by email and gets opened
+-- unattended, possibly forwarded, so every billable action is recorded here and
+-- checked against a ceiling before it runs. Without this, one person clicking
+-- "call" repeatedly is an unbounded charge on someone's card.
+create table if not exists usage (
+  id         bigserial primary key,
+  kind       text        not null,           -- 'call' | 'enrich' | 'ask'
+  cost_usd   numeric(10,4) not null default 0,
+  ref        text,                           -- call id, property id
+  meta       jsonb       not null default '{}',
+  created_at timestamptz not null default now()
+);
+
+create index if not exists usage_kind_created_idx on usage (kind, created_at desc);
+
+alter table usage enable row level security;

@@ -7,6 +7,7 @@
 import { listHomes, upsertHome, readOnly } from '../_lib/store.js'
 import { enrichFromWeb } from '../_lib/enrich.js'
 import { applyFields } from '../_lib/apply.js'
+import { checkAllowance, record, ESTIMATE } from '../_lib/budget.js'
 import { computeGaps } from '../../shared/field-registry.js'
 import { methodGuard, fail } from '../_lib/http.js'
 
@@ -39,6 +40,18 @@ export default async function handler(req, res) {
   }
 
   try {
+    const allowance = await checkAllowance('enrich')
+    if (!allowance.ok) {
+      return res.status(200).json({
+        fallback: 'budget',
+        spent: allowance.spent,
+        budget: allowance.budget,
+        error:
+          'The research budget for this demo has been spent. Browse the existing properties on the Doors page — ' +
+          'they show the same data this step produces.',
+      })
+    }
+
     const existing = await listHomes()
     const id = makeId(address, doorNumber, new Set(existing.map((h) => h.id)))
 
@@ -57,6 +70,7 @@ export default async function handler(req, res) {
     const { applied, skipped } = applyFields(home, enrichment.fields, 'web')
 
     const saved = await upsertHome(home)
+    await record('enrich', ESTIMATE.enrich, saved.id, { address })
 
     res.status(200).json({
       home: saved,
