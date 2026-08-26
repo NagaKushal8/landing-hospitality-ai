@@ -422,3 +422,45 @@ body {
 }
 .plan-toggle input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
 .plan-toggle input:disabled { cursor: not-allowed; }
+
+/* ---- Intro ------------------------------------------------------------- */
+.intro { max-width: 720px; }
+.intro-lede { margin-bottom: 34px; }
+.intro-lede h1 { margin: 0 0 12px; font-size: 30px; line-height: 1.2; letter-spacing: -0.01em; }
+.intro-lede p { margin: 0; color: var(--muted); line-height: 1.65; font-size: 15px; }
+
+.intro-block { margin-bottom: 32px; }
+.intro-block h2 {
+  margin: 0 0 10px; font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--accent); font-weight: 700;
+}
+.intro-block > p { margin: 0 0 12px; color: var(--muted); line-height: 1.6; font-size: 14.5px; }
+.intro-block ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.65; font-size: 14.5px; }
+.intro-block ul li + li { margin-top: 9px; }
+.intro-block b { color: var(--text); font-weight: 600; }
+
+.intro-flow { list-style: none; margin: 0; padding: 0; }
+.intro-flow li { display: flex; gap: 12px; padding: 10px 0; color: var(--muted); line-height: 1.6; font-size: 14.5px; }
+.intro-flow li + li { border-top: 1px solid var(--line); }
+.flow-n {
+  flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid;
+  place-items: center; font-size: 11px; font-weight: 700; margin-top: 2px;
+  background: var(--accent-dim); color: #06231f;
+}
+
+.intro-cards { display: grid; gap: 10px; }
+.intro-card {
+  display: block; text-align: left; cursor: pointer; width: 100%;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; color: var(--muted); font-size: 13.5px; line-height: 1.55;
+}
+.intro-card:hover { border-color: var(--accent-dim); background: var(--panel-2); }
+.intro-card b { display: block; color: var(--text); font-size: 14.5px; margin-bottom: 3px; }
+
+.intro-foot {
+  margin: 0; padding-top: 20px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 12.5px; line-height: 1.6;
+}
+
+/* The brand is a button now (it returns to the intro), so strip button chrome. */
+.brand { background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
