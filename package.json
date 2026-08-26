@@ -4,10 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vercel dev",
     "build": "vite build",
     "preview": "vite preview",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "dev:ui": "vite",
+    "start": "vercel dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

@@ -64,3 +64,26 @@ Extracted values currently auto-publish with no human review step. That is a
 deliberate demo tradeoff, not a recommendation: a misheard door code reaches a
 guest with nothing in between. A review queue for `critical` fields is the first
 thing to add before this touches a real guest.
+
+## Deploying
+
+The repo is a Vite SPA plus Vercel serverless functions in `/api`, so Vercel
+needs no configuration beyond the environment variables.
+
+1. Import the repo at [vercel.com/new](https://vercel.com/new). Framework
+   preset **Vite** is detected automatically.
+2. Add the variables from `.env.example` under Settings → Environment Variables.
+   None of them are `VITE_` prefixed, so none reach the browser.
+3. Run `supabase/schema.sql` in the Supabase SQL editor, then `npm run seed`
+   locally to load the six demo properties.
+
+`vercel.json` gives the onboarding routes a 60s ceiling (web research is slow)
+and registers a daily cron against `/api/health`, which keeps the free-tier
+Supabase project from pausing after a week of inactivity — otherwise a link
+sent today is dead when it gets opened next week.
+
+### Costs
+
+Vercel Hobby and Supabase free tiers are $0. OpenAI runs a few cents per
+enrichment. Vapi is the only meaningful cost at roughly $0.25–0.50 per
+five-minute call.
