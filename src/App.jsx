@@ -59,10 +59,7 @@ export default function App() {
       <header className="topbar">
         <button className="brand" onClick={() => setScreen('intro')} title="Start here">
           <span className="brand-mark">▚</span>
-          <div>
-            <div className="brand-name">Property Concierge</div>
-            <div className="brand-sub">{loading ? 'loading…' : `${homes.length} homes`} · 25+ fields each</div>
-          </div>
+          <span className="brand-name">Property Concierge</span>
         </button>
         <nav className="nav">
           {TABS.map((t) => (
