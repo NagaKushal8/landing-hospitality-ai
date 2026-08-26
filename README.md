@@ -65,6 +65,52 @@ deliberate demo tradeoff, not a recommendation: a misheard door code reaches a
 guest with nothing in between. A review queue for `critical` fields is the first
 thing to add before this touches a real guest.
 
+## Setting up Vapi
+
+The voice agent is the only part that costs real money and the only part that
+needs an account beyond OpenAI and Supabase. Roughly ten minutes:
+
+1. **Sign up** at [vapi.ai](https://vapi.ai). New accounts get $10 in free
+   credit, which is on the order of 150-200 minutes of calling — far more than
+   this needs.
+
+2. **Get the private API key.** Dashboard -> API Keys. There are two keys and
+   they are not interchangeable: the **public** key is only valid for web calls
+   (`/call/web`), while every other endpoint — including the `POST /call` this
+   app uses — is privately scoped. Grab the **private** one, or you will get a
+   401 that looks like a bad key rather than the wrong key. Put it in
+   `VAPI_API_KEY`.
+
+3. **Create a phone number.** Dashboard -> Phone Numbers -> Create Phone Number
+   -> **Free Vapi Number**, then enter a three-digit US area code. Free numbers
+   are US-only, and there is a cap on outbound calls per day — fine for a demo,
+   not for volume. Copy the number's **UUID** (not the phone number itself) into
+   `VAPI_PHONE_NUMBER_ID`.
+
+4. **Test it.** Put your own mobile in the phone field on the Onboard page and
+   play the property manager. Before dialing anything you can check exactly what
+   the agent will be briefed on:
+
+   ```bash
+   curl -s -X POST localhost:5173/api/onboard/call      -H 'Content-Type: application/json'      -d '{"homeId":"AUS-4B","phoneNumber":"555-555-5555","preview":true}'
+   ```
+
+   That returns the gap list, the opening line, and the full system prompt
+   without placing a call or spending anything.
+
+Two things worth knowing before you demo this live:
+
+- **A free Vapi number has no reputation**, so it may show up as an unknown
+  number or get filtered. Have your phone in hand and expect to answer a number
+  you do not recognise.
+- **`VAPI_MAX_SECONDS` caps the call** at 8 minutes by default. Calls bill per
+  minute, so that is the backstop against one that goes sideways with nobody
+  watching.
+
+No assistant needs to be configured in the Vapi dashboard. The agent is built
+fresh on every call from the property's current gap list, which is what keeps it
+from drifting out of sync with the field registry.
+
 ## Deploying
 
 The repo is a Vite SPA plus Vercel serverless functions in `/api`, so Vercel
