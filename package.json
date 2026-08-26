@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "seed": "node scripts/seed.js",
     "dev:ui": "vite",
-    "start": "vercel dev"
+    "start": "vercel dev",
+    "vapi:check": "node scripts/vapi-check.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",
