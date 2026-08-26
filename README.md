@@ -130,109 +130,59 @@ is dead when they open it. `vercel.json` registers a daily cron against
 `/api/health` to keep it warm — that only runs once deployed, so if you leave the
 project idle before then, wake it from the dashboard.
 
-## Setting up Bland (alternative to Vapi)
+## Setting up Bland
 
-Bland is the second implemented provider, added because Vapi's own phone
-numbers rejected every outbound call on an account with no payment method,
-while Bland connected on the first attempt without one. The agent brief,
-extraction, spend ceiling and replay are identical either way — only the vendor
-that dials changes.
+Bland places the outbound calls. It was chosen after Vapi's own numbers
+rejected every outbound attempt on an account with no payment method —
+including the first call ever made, so there was no allowance to have spent —
+while Bland connected immediately.
 
-1. Sign up at [bland.ai](https://bland.ai) and copy the API key.
-2. In `.env.local` (and your Vercel environment):
+1. Sign up at [bland.ai](https://bland.ai), copy the API key.
+2. Pick a voice from the Voice Library and copy its id.
+3. In `.env.local` (and your Vercel environment):
 
    ```
-   VOICE_PROVIDER=bland
    BLAND_API_KEY=...
+   BLAND_VOICE=...
    ```
 
-3. `npm run call:prompt <propertyId>` prints the exact brief for a property if
-   you want to try it by hand in their dashboard first. Worth doing before
-   wiring anything: it answers "does outbound actually work on this account"
-   for the price of one call.
+4. `npm run bland:check` — read-only, places no calls. Confirms the key works
+   and lists what Bland has on record.
 
-Differences the adapter absorbs, so nothing downstream has to care:
+Before wiring anything to a new provider, `npm run call:prompt <propertyId>`
+prints the exact brief for a property so you can paste it into a dashboard and
+test by hand. Five minutes there answers "does outbound actually work on this
+account", which is the question undocumented free-tier limits keep answering
+wrong.
 
-- Bland's `task` is the entire agent brief; there is no separate system message.
-- It reports completion as `completed: true` / status `"completed"`, where the
-  rest of this codebase speaks Vapi's `"ended"`.
-- Cost comes back as `price` rather than `cost`.
-- Its docs and examples disagree on whether the API key is sent bare or with a
-  `Bearer` prefix, so the adapter tries bare and retries once on a 401.
+### What the integration uses
 
-Pricing is roughly a wash — Bland is ~$0.14/min all-in on the free plan plus
-$0.015 per attempt (charged even when a call fails), against Vapi's $0.05/min
-platform fee plus pass-through that lands around $0.11–0.15/min.
+One API key in a header, one POST to place a call, one GET to read it back —
+no SDK.
 
-## Setting up Vapi
+| Parameter | Why |
+|---|---|
+| `task` | the gap-driven agent brief, built per call |
+| `first_sentence` | the opening line, naming the actual address |
+| `wait_for_greeting` | lets the person say hello first; talking over the pickup is the most obviously-robotic thing a call can do |
+| `interruption_threshold` | leans patient — contacts trail off mid-sentence and cutting in loses the answer |
+| `max_duration` | cost backstop, `CALL_MAX_MINUTES` |
+| `record` | so a call can be listened back to in the UI |
+| `metadata` | our property id, to reconcile from Bland's side |
 
-The voice agent is the only part that costs real money and the only part that
-needs an account beyond OpenAI and Supabase. Roughly ten minutes:
+Results come back by **polling** `GET /v1/calls/{id}` rather than Bland's
+webhook. Polling needs no public URL, so the flow works from a laptop with no
+tunnel, and on serverless it avoids holding a function open for the length of a
+phone call.
 
-1. **Sign up** at [vapi.ai](https://vapi.ai). New accounts get $10 in free
-   credit, which is on the order of 150-200 minutes of calling — far more than
-   this needs.
+Two shape details the adapter absorbs so nothing downstream has to know them:
+Bland's list endpoint omits transcripts entirely (only the detail endpoint
+carries one), and it labels turns `assistant` / `user` where `user` is the
+property contact — relabelled to `AI` / `Contact` so the extraction prompt is
+not inferring who is who on every call.
 
-2. **Get the private API key.** Dashboard -> API Keys. There are two keys and
-   they are not interchangeable: the **public** key is only valid for web calls
-   (`/call/web`), while every other endpoint — including the `POST /call` this
-   app uses — is privately scoped. Grab the **private** one, or you will get a
-   401 that looks like a bad key rather than the wrong key. Put it in
-   `VAPI_API_KEY`.
-
-3. **Create a phone number.** Dashboard -> Phone Numbers -> Create Phone Number
-   -> **Free Vapi Number**, then enter a three-digit US area code. Free numbers
-   are US-only, and there is a cap on outbound calls per day — fine for a demo,
-   not for volume. Copy the number's **UUID** (not the phone number itself) into
-   `VAPI_PHONE_NUMBER_ID`.
-
-4. **Test it.** Put your own mobile in the phone field on the Onboard page and
-   play the property manager. Before dialing anything you can check exactly what
-   the agent will be briefed on:
-
-   ```bash
-   curl -s -X POST localhost:5173/api/onboard/call      -H 'Content-Type: application/json'      -d '{"homeId":"AUS-4B","phoneNumber":"555-555-5555","preview":true}'
-   ```
-
-   That returns the gap list, the opening line, and the full system prompt
-   without placing a call or spending anything.
-
-Two things worth knowing before you demo this live:
-
-- **A free Vapi number has no reputation**, so it may show up as an unknown
-  number or get filtered. Have your phone in hand and expect to answer a number
-  you do not recognise.
-- **Free Vapi numbers have a daily outbound call limit** that a brand-new
-  account can hit on its first call. The failure is explicit — *"Numbers Bought
-  On Vapi Have A Daily Outbound Call Limit"* — and the app translates it into
-  what to do. Two ways out, cheapest first:
-
-  1. **Top up Vapi ($10 minimum).** No monthly fee, but pay-as-you-go requires a
-     $10 minimum credit purchase. That is prepayment, not a fee: Vapi's
-     per-minute platform charge draws from it whichever number you end up using,
-     so it is not wasted even if you later import Twilio. Their docs say a
-     payment method is required for additional free numbers, and an account
-     rejected on its very first call is a payment gate rather than a spent
-     allowance — strong evidence, though Vapi does not document it outright.
-     **Do not buy the $99/mo Team plan**; it is a concurrency tier and changes
-     nothing here.
-  2. **Import a Twilio number.** $1.15/mo, definitively uncapped, and what the
-     error itself recommends. Vapi Dashboard -> Phone Numbers -> Import, then put
-     the imported number's id in `VAPI_PHONE_NUMBER_ID`. The catch: a Twilio
-     *trial* account can only dial **verified** numbers (up to 5, each verified
-     by a code sent to that number). Enough to call your own phone and record a
-     good demo call; not enough to let a stranger open the link and have their
-     own phone ring, which needs a paid Twilio account.
-
-  `npm run vapi:check` reports which kind of number you are on — `provider: vapi`
-  is the capped kind, `provider: twilio` is the imported one.
-- **`VAPI_MAX_SECONDS` caps the call** at 8 minutes by default. Calls bill per
-  minute, so that is the backstop against one that goes sideways with nobody
-  watching.
-
-No assistant needs to be configured in the Vapi dashboard. The agent is built
-fresh on every call from the property's current gap list, which is what keeps it
-from drifting out of sync with the field registry.
+Pricing is about $0.14/min all-in on the free plan, plus $0.015 per attempt
+charged even when a call fails.
 
 ## Deploying
 

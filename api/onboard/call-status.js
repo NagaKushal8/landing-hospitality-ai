@@ -1,9 +1,9 @@
 // GET /api/onboard/call-status?callId=...
 //
-// The client polls this while the phone is ringing. Once Vapi reports the call
-// ended, this is also where the transcript gets extracted and written into the
-// property — done here rather than in a webhook so the whole flow works from a
-// laptop with no public URL.
+// The client polls this while the phone is ringing. Once the provider reports
+// the call ended, this is where the transcript gets extracted and written into
+// the property — done here rather than in Bland's webhook, so the whole flow
+// works from a laptop with no public URL.
 
 import { getCall, updateCall, getHome, upsertHome } from '../_lib/store.js'
 import { fetchCall } from '../_lib/voice.js'
@@ -32,6 +32,8 @@ export default async function handler(req, res) {
         status: record.status,
         done: true,
         transcript: record.transcript,
+        recordingUrl: record.recording_url || null,
+        summary: record.summary || null,
         extracted: record.extracted,
         home: await getHome(record.property_id),
       })
@@ -45,7 +47,12 @@ export default async function handler(req, res) {
       return res.status(200).json({ status: live.status, done: false, transcript: live.transcript || '' })
     }
 
-    await updateCall(callId, { status: live.status, transcript: live.transcript })
+    await updateCall(callId, {
+      status: live.status,
+      transcript: live.transcript,
+      recording_url: live.recordingUrl,
+      summary: live.summary,
+    })
 
     // The provider reports what the call actually cost. Swap it in for the
     // up-front reservation so a short call does not keep holding a full one's
@@ -78,6 +85,8 @@ export default async function handler(req, res) {
       endedReason: live.endedReason,
       done: true,
       transcript: live.transcript,
+      recordingUrl: live.recordingUrl,
+      summary: live.summary,
       extracted: { applied: detail, skipped, note },
       remainingGaps: computeGaps(saved).length,
       home: saved,

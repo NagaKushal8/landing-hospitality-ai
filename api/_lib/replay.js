@@ -1,6 +1,7 @@
 // replay.js — what the demo shows when it cannot place a live call.
 //
-// The link is opened unattended, so "Vapi refused" or "the budget is spent"
+// The link is opened unattended, so "the call was refused" or "the budget is
+// spent"
 // must not be where the demo ends. Instead it replays a call that already
 // happened: the transcript and the extracted fields are real, and the UI plays
 // them back with the timing of a live call.
@@ -21,6 +22,7 @@ function shape(row) {
     propertyId: row.property_id,
     transcript: row.transcript,
     applied: row.extracted?.applied || [],
+    recordingUrl: row.recording_url || null,
   }
 }
 
@@ -38,7 +40,7 @@ export async function getReplay() {
     if (PINNED) {
       const { data, error } = await supabase()
         .from('calls')
-        .select('id, transcript, extracted, created_at, property_id')
+        .select('id, transcript, extracted, created_at, property_id, recording_url')
         .eq('id', PINNED)
         .maybeSingle()
       if (error) console.error('[replay] pinned call lookup failed:', error.message)
@@ -48,7 +50,7 @@ export async function getReplay() {
 
     const { data, error } = await supabase()
       .from('calls')
-      .select('id, transcript, extracted, created_at, property_id')
+      .select('id, transcript, extracted, created_at, property_id, recording_url')
       .not('transcript', 'is', null)
       .order('created_at', { ascending: false })
       .limit(25)

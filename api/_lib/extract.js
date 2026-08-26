@@ -1,6 +1,6 @@
 // extract.js — transcript in, structured fields out.
 //
-// This runs as our own pass rather than Vapi's built-in call analysis, for one
+// This runs as our own pass rather than Bland's built-in call analysis, for one
 // practical reason: the schema comes from our field registry, so changing a
 // field is a registry edit rather than a dashboard edit, and we can re-run
 // extraction against a stored transcript without calling anyone back. That

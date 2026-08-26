@@ -15,12 +15,14 @@ create table if not exists properties (
 );
 
 create table if not exists calls (
-  id           text primary key,                 -- Vapi call id
+  id           text primary key,                 -- the provider's call id
   property_id  text references properties(id) on delete cascade,
   phone_number text,
   status       text        not null default 'queued',
   transcript   text,
   extracted    jsonb,
+  recording_url text,                            -- Bland's stored audio
+  summary      text,                             -- Bland's own call summary
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );

@@ -2,18 +2,18 @@
 //
 // This runs on a link that gets emailed and opened unattended, so it is gated
 // twice before it spends anything: a hard total ceiling that nothing bypasses,
-// and a daily count that falls back to a PIN. When either blocks, or when Vapi
-// itself refuses, the response carries a replay instead of an error — the demo
-// degrades to a recording rather than a red box.
+// and a daily count that falls back to a PIN. When either blocks, or when the
+// provider itself refuses, the response carries a replay instead of an error —
+// the demo degrades to a recording rather than a red box.
 
 import { getHome, createCall, readOnly } from '../_lib/store.js'
-import { startCall, isConfigured, buildSystemPrompt, buildFirstMessage, providerName } from '../_lib/voice.js'
+import { startCall, isConfigured, buildSystemPrompt, buildFirstMessage } from '../_lib/voice.js'
 import { checkAllowance, record, ESTIMATE } from '../_lib/budget.js'
 import { getReplay } from '../_lib/replay.js'
 import { computeGaps } from '../../shared/field-registry.js'
 import { methodGuard, fail } from '../_lib/http.js'
 
-// E.164 is what Vapi expects. Accept what a person would actually type and
+// E.164 is what Bland expects. Accept what a person would actually type and
 // normalise it, rather than bouncing them for punctuation.
 function normalizePhone(input) {
   const raw = String(input || '').trim()
@@ -78,10 +78,10 @@ export default async function handler(req, res) {
       })
     }
 
-    const voiceReady = await isConfigured()
+    const voiceReady = isConfigured()
     const blocked =
       !allowance.ok ? { why: 'budget', detail: allowance }
-      : !voiceReady ? { why: 'vapi-unconfigured', detail: null }
+      : !voiceReady ? { why: 'voice-unconfigured', detail: null }
       : readOnly() ? { why: 'store-unconfigured', detail: null }
       : null
 
@@ -105,11 +105,11 @@ export default async function handler(req, res) {
 
       return res.status(200).json({ callId, status, number, gaps: gaps.map(slim) })
     } catch (err) {
-      // Vapi refused — a spent daily quota, no credit, a bad number. The demo
-      // still has something to show.
-      console.error(`[call] ${providerName()} refused:`, err.message)
+      // The provider refused — no credit, a bad number, a rejected key. The
+      // demo still has something to show.
+      console.error('[call] provider refused:', err.message)
       return res.status(200).json({
-        fallback: 'vapi-refused',
+        fallback: 'call-refused',
         reason: err.message,
         gaps: gaps.map(slim),
         replay: await getReplay(),

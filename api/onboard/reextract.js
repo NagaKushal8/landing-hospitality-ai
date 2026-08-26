@@ -1,9 +1,9 @@
 // POST /api/onboard/reextract — re-run extraction against a stored transcript.
 //
-// The reason our own extraction pass exists rather than Vapi's built-in one:
-// the transcript is the expensive part, and this lets the prompt and the field
-// registry be tuned against it for free, as many times as needed, without
-// calling a property manager back.
+// The reason our own extraction pass exists rather than Bland's built-in call
+// analysis: the transcript is the expensive part, and this lets the prompt and
+// the field registry be tuned against it for free, as many times as needed,
+// without calling a property manager back.
 //
 // Unlike the post-call pass this overwrites, since the point is to correct
 // what the first pass got wrong.

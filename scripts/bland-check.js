@@ -1,8 +1,8 @@
 // Read-only Bland diagnostic. Places NO calls and spends nothing.
 //
-// Mirrors scripts/vapi-check.js. Its main job after the first call is finding
-// the id of your best recording, which goes in DEMO_REPLAY_CALL_ID so it
-// becomes what visitors see when a live call cannot be placed.
+// Reports what Bland itself has on record. Note that DEMO_REPLAY_CALL_ID is
+// resolved against this app's own `calls` table, not against Bland — use
+// `npm run calls:list` to pick the id to pin.
 //
 //   node scripts/bland-check.js
 

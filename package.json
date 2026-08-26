@@ -10,7 +10,6 @@
     "seed": "node scripts/seed.js",
     "dev:ui": "vite",
     "start": "vercel dev",
-    "vapi:check": "node scripts/vapi-check.js",
     "call:prompt": "node scripts/call-prompt.js",
     "bland:check": "node scripts/bland-check.js",
     "calls:list": "node scripts/calls-list.js"

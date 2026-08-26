@@ -29,9 +29,9 @@ const STATUS_COPY = {
 const FALLBACK_COPY = {
   budget:
     'This demo has a fixed spend ceiling and it has been reached, so live calls are off. Everything below is from a call that actually happened.',
-  'vapi-refused':
+  'call-refused':
     'The phone provider declined this call — a free number has a daily allowance and it is spent. Here is a call that already went through.',
-  'vapi-unconfigured': 'Live calling is not configured on this deployment. Here is a recorded call.',
+  'voice-unconfigured': 'Live calling is not configured on this deployment. Here is a recorded call.',
   'store-unconfigured': 'The database is not configured on this deployment, so results could not be saved. Here is a recorded call.',
 }
 
@@ -64,9 +64,10 @@ export default function Onboard({ onOpenHelp }) {
   const [status, setStatus] = useState(null)
   const [result, setResult] = useState(null)
   const [transcript, setTranscript] = useState('')
+  const [recordingUrl, setRecordingUrl] = useState(null)
   const [reextracting, setReextracting] = useState(false)
   // Set when the backend declines to dial — daily allowance spent, budget
-  // ceiling reached, or Vapi refused. Carries a recording so the demo keeps
+  // ceiling reached, or the provider refused. Carries a recording so the demo keeps
   // going instead of stopping at an error.
   const [replay, setReplay] = useState(null)
   const [replayReason, setReplayReason] = useState(null)
@@ -102,6 +103,7 @@ export default function Onboard({ onOpenHelp }) {
         const res = await callStatus(id)
         setStatus(res.status)
         if (res.transcript) setTranscript(res.transcript)
+        if (res.recordingUrl) setRecordingUrl(res.recordingUrl)
         if (res.done) {
           setCalling(false)
           setResult(res.extracted)
@@ -125,6 +127,7 @@ export default function Onboard({ onOpenHelp }) {
     setError(null)
     setResult(null)
     setTranscript('')
+    setRecordingUrl(null)
     setReplay(null)
     setReplayReason(null)
     try {
@@ -316,6 +319,11 @@ export default function Onboard({ onOpenHelp }) {
             <div className="transcript">
               <div className="col-label">Transcript</div>
               <pre>{transcript || '(no transcript)'}</pre>
+              {recordingUrl && (
+                <audio className="replay-audio" controls preload="none" src={recordingUrl}>
+                  Your browser cannot play this recording.
+                </audio>
+              )}
             </div>
             <div className="extracted">
               <div className="col-label">

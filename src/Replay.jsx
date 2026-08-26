@@ -1,7 +1,7 @@
 // Replays a call that already happened, at the pace of a live one.
 //
 // This is what the demo shows when it cannot dial: the daily allowance is
-// spent, the budget ceiling is reached, or Vapi refused. The link gets opened
+// spent, the budget ceiling is reached, or the provider refused. The link is opened
 // unattended with nobody around to explain a failure, so the fallback has to
 // carry the idea on its own rather than apologise.
 //
@@ -74,6 +74,12 @@ export default function Replay({ replay, reason }) {
             : ' — played back, not live.'}
         {reason && <div className="replay-why">{reason}</div>}
       </div>
+
+      {replay?.recordingUrl && (
+        <audio className="replay-audio" controls preload="none" src={replay.recordingUrl}>
+          Your browser cannot play this recording.
+        </audio>
+      )}
 
       <div className="result-cols">
         <div className="transcript">

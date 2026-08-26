@@ -316,3 +316,4 @@ body {
 .pin-row { margin-top: 14px; align-items: flex-end; }
 .pin-row input { letter-spacing: 0.18em; }
 .pin-err { font-size: 12px; color: #ff9b8a; align-self: center; }
+.replay-audio { width: 100%; margin-top: 10px; height: 34px; }
