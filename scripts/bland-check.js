@@ -88,11 +88,13 @@ if (!list.length) {
 
   if (best?.len > 200) {
     console.log(`\n  Longest transcript: ${best.id} (${best.len} chars)`)
-    console.log('  To pin it as the demo recording, add to .env.local and Vercel:')
-    console.log(`\n    DEMO_REPLAY_CALL_ID=${best.id}\n`)
-    console.log('  Note: the app stores its own copy of each call it places, so pinning')
-    console.log('  only works for calls made through the app, not ones started in the')
-    console.log('  Bland dashboard.')
+    console.log('')
+    console.log('  IMPORTANT: DEMO_REPLAY_CALL_ID is looked up in this app\'s own `calls`')
+    console.log('  table, not in Bland. A call placed from the Bland dashboard never gets')
+    console.log('  a row here, so pinning its id will silently fall back to the written')
+    console.log('  sample. Place the call you want to pin from the Onboard page — that is')
+    console.log('  also the only path that runs extraction and writes the fields into the')
+    console.log('  property. Then take the id from `npm run calls:list`.')
   } else {
     console.log('\n  No call yet has enough transcript to serve as the demo recording.')
     console.log('  Place a full-length one through the Onboard page and re-run this.')
