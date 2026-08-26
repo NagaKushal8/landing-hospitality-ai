@@ -28,9 +28,11 @@ create table if not exists calls (
 create index if not exists calls_property_id_idx on calls (property_id);
 
 -- Records hold door codes, lockbox combinations and Wi-Fi passwords. Only the
--- serverless functions touch these tables, using the service-role key which
--- bypasses RLS. RLS is enabled with no policies, so the anon key — the one
--- that would be exposed if anything client-side ever reached for it — can
--- read nothing.
+-- serverless functions touch these tables, using the secret key
+-- (`sb_secret_...`, or a legacy service_role JWT), which bypasses RLS.
+--
+-- RLS is enabled with NO policies on purpose: the publishable/anon key — the
+-- one that would be exposed if anything client-side ever reached for it — can
+-- then read nothing at all.
 alter table properties enable row level security;
 alter table calls      enable row level security;

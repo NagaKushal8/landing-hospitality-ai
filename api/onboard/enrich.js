@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   }
   if (readOnly()) {
     return res.status(503).json({
-      error: 'Supabase is not configured, so new properties cannot be saved. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.',
+      error: 'Supabase is not configured, so new properties cannot be saved. Set SUPABASE_URL and SUPABASE_SECRET_KEY.',
     })
   }
 

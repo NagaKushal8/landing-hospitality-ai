@@ -4,15 +4,21 @@
 //
 //   node scripts/seed.js
 
-import 'dotenv/config'
+import { config } from 'dotenv'
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 
+// `dotenv/config` would only read `.env`, but real values live in `.env.local`
+// (that is the gitignored one). Load both, local winning, so this matches where
+// `vercel dev` reads from.
+config({ path: '.env' })
+config({ path: '.env.local', override: true })
+
 const URL = process.env.SUPABASE_URL
-const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
+const KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 
 if (!URL || !KEY) {
-  console.error('Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY.')
+  console.error('Missing SUPABASE_URL / SUPABASE_SECRET_KEY.')
   console.error('Copy .env.example to .env.local and fill them in.')
   process.exit(1)
 }

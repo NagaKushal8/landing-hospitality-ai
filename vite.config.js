@@ -1,8 +1,16 @@
 import { readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { config as loadEnv } from 'dotenv'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+
+// Vite only exposes VITE_-prefixed vars, and only to client code — the API
+// handlers below are plain Node and read process.env, so nothing would reach
+// them without this. Same precedence `vercel dev` uses: .env first, .env.local
+// overriding it.
+loadEnv({ path: '.env' })
+loadEnv({ path: '.env.local', override: true })
 
 // In production Vercel turns every file under /api into a serverless function.
 // This mounts the same handlers on the Vite dev server so `npm run dev:ui`
@@ -29,6 +37,16 @@ function apiDevServer() {
     name: 'api-dev-server',
     configureServer(server) {
       scan(join(server.config.root, 'api'))
+
+      // Say plainly which services are live, so "why is it in offline mode"
+      // is answered at startup rather than by reading response payloads.
+      const has = (k) => (process.env[k] ? 'yes' : 'NO')
+      server.config.logger.info(
+        `  api  openai:${has('OPENAI_API_KEY')} ` +
+          `supabase:${process.env.SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY) ? 'yes' : 'NO'} ` +
+          `vapi:${has('VAPI_API_KEY')}`
+      )
+
       // Static routes must win over /api/homes/[id], so match them first.
       routes.sort((a, b) => Number(Boolean(a.param)) - Number(Boolean(b.param)))
 
