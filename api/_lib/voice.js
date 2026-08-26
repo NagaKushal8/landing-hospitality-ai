@@ -145,10 +145,12 @@ export function buildFirstMessage(home) {
 
 // ---- Placing and reading a call --------------------------------------------
 
-export async function startCall({ home, phoneNumber }) {
+export async function startCall({ home, phoneNumber, gaps: scoped }) {
   if (!isConfigured()) throw new Error('Bland is not configured (BLAND_API_KEY)')
 
-  const gaps = computeGaps(home)
+  // The caller may have narrowed the list to critical fields only; respect that
+  // rather than silently briefing on everything.
+  const gaps = scoped?.length ? scoped : computeGaps(home)
   if (!gaps.length) {
     throw new Error('Nothing left to ask about — this property has no gaps a call could fill.')
   }

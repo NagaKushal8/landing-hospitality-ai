@@ -36,13 +36,22 @@ const slim = (g) => ({
 export default async function handler(req, res) {
   if (!methodGuard(req, res, 'POST')) return
 
-  const { homeId, phoneNumber, preview, pin } = req.body || {}
+  const { homeId, phoneNumber, preview, pin, scope } = req.body || {}
   if (!homeId) return res.status(400).json({ error: 'homeId is required' })
 
   try {
     const home = await getHome(homeId)
     if (!home) return res.status(404).json({ error: `No property ${homeId}` })
-    const gaps = computeGaps(home)
+
+    // A property manager doing you a favour has a patience budget. 24 topics is
+    // a long call, and the last ones are trash schedules while the first ones
+    // are the difference between a guest getting in and standing at a locked
+    // door. 'critical' asks only the latter.
+    const allGaps = computeGaps(home)
+    const gaps = scope === 'critical' ? allGaps.filter((g) => g.critical) : allGaps
+    if (!gaps.length) {
+      return res.status(400).json({ error: 'Nothing left to ask about for this property.' })
+    }
 
     // Shows exactly what the agent will be briefed on without spending anything.
     if (preview) {
@@ -52,6 +61,8 @@ export default async function handler(req, res) {
         gaps: gaps.map(slim),
         firstMessage: buildFirstMessage(home),
         systemPrompt: buildSystemPrompt(home, gaps),
+        scope: scope === 'critical' ? 'critical' : 'all',
+        totalGaps: allGaps.length,
       })
     }
 
@@ -97,7 +108,7 @@ export default async function handler(req, res) {
 
     // --- dial ----------------------------------------------------------------
     try {
-      const { callId, status } = await startCall({ home, phoneNumber: number })
+      const { callId, status } = await startCall({ home, phoneNumber: number, gaps })
       await createCall({ id: callId, propertyId: homeId, phoneNumber: number, status })
       // Reserved up front and reconciled against the real figure when the call
       // ends. Reserving late would let concurrent clicks both pass the ceiling.

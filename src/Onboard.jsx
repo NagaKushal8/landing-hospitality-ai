@@ -73,6 +73,8 @@ export default function Onboard({ onOpenHelp }) {
   const [replayReason, setReplayReason] = useState(null)
   const [pinPrompt, setPinPrompt] = useState(null)
   const [pin, setPin] = useState('')
+  // 'critical' asks only what strands a guest; 'all' works the whole list.
+  const [scope, setScope] = useState('critical')
   const pollRef = useRef(null)
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -131,7 +133,7 @@ export default function Onboard({ onOpenHelp }) {
     setReplay(null)
     setReplayReason(null)
     try {
-      const res = await startCall({ homeId: home.id, phoneNumber: phone, pin: withPin })
+      const res = await startCall({ homeId: home.id, phoneNumber: phone, pin: withPin, scope })
 
       // Past the daily allowance. Ask for the PIN, and show the recording
       // meanwhile so there is something to look at either way.
@@ -181,6 +183,11 @@ export default function Onboard({ onOpenHelp }) {
   }
 
   const criticalGaps = gaps.filter((g) => g.critical)
+  const otherGaps = gaps.filter((g) => !g.critical)
+  const askCount = scope === 'critical' ? criticalGaps.length : gaps.length
+  // Rough, but the useful signal is "three minutes" versus "eight" — a property
+  // manager's patience is the real constraint, not our field count.
+  const estMinutes = Math.max(2, Math.round((askCount * 20 + 40) / 60))
 
   // Research quality tracks address quality closely. "90 fisher ave" made the
   // model guess a city and it found five fields; the same address with a city and
@@ -263,16 +270,37 @@ export default function Onboard({ onOpenHelp }) {
           ) : (
             <>
               <p className="hint">
-                <b>{gaps.length}</b> fields left, <b>{criticalGaps.length}</b> of them the kind that leave a guest
-                standing at a locked door. The agent will be briefed on these and will not ask about anything above.
+                <b>{gaps.length}</b> fields left. The agent is briefed on these and will not ask about anything
+                found above.
               </p>
-              <div className="gap-chips">
-                {gaps.map((g) => (
-                  <span key={g.key} className={`gap-chip ${g.critical ? 'critical' : ''}`} title={g.voiceTopic}>
-                    {g.section === g.label ? g.label : `${g.section} · ${g.label}`}
-                  </span>
-                ))}
+
+              <div className="gap-group">
+                <div className="gap-group-label">
+                  <b>{criticalGaps.length} critical</b> — a guest is stuck at the door without these
+                </div>
+                <div className="gap-chips">
+                  {criticalGaps.map((g) => (
+                    <span key={g.key} className="gap-chip critical" title={g.voiceTopic}>
+                      {g.section === g.label ? g.label : `${g.section} · ${g.label}`}
+                    </span>
+                  ))}
+                </div>
               </div>
+
+              {otherGaps.length > 0 && (
+                <div className="gap-group">
+                  <div className="gap-group-label">
+                    {otherGaps.length} useful, but nobody is locked out without them
+                  </div>
+                  <div className="gap-chips">
+                    {otherGaps.map((g) => (
+                      <span key={g.key} className="gap-chip" title={g.voiceTopic}>
+                        {g.section === g.label ? g.label : `${g.section} · ${g.label}`}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </Step>
@@ -280,6 +308,29 @@ export default function Onboard({ onOpenHelp }) {
 
       {home && gaps.length > 0 && (
         <Step n="3" title="Call the property contact" subtitle="A real outbound call. Natural conversation, not a questionnaire." done={Boolean(result)} active={Boolean(!result)}>
+          <div className="scope-picker">
+            {[
+              { id: 'critical', n: criticalGaps.length, label: 'Critical only', why: 'access, codes, Wi-Fi, emergency' },
+              { id: 'all', n: gaps.length, label: 'Everything missing', why: 'adds trash, laundry, checkout, amenities' },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={scope === opt.id ? 'scope-opt active' : 'scope-opt'}
+                onClick={() => setScope(opt.id)}
+                disabled={calling}
+              >
+                <span className="scope-n">{opt.n}</span>
+                <span className="scope-label">{opt.label}</span>
+                <span className="scope-why">{opt.why}</span>
+              </button>
+            ))}
+          </div>
+          <p className="hint">
+            Asking <b>{askCount}</b> topics — roughly a <b>{estMinutes}-minute</b> call. Whatever is left stays a
+            gap, and another call can pick it up later.
+          </p>
+
           <div className="call-row">
             <label>
               Phone number
