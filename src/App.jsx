@@ -1,17 +1,39 @@
-import { useState } from 'react'
-import homes from './data/homes.json'
+import { useEffect, useState, useCallback } from 'react'
 import DoorList from './DoorList.jsx'
 import HelpScreen from './HelpScreen.jsx'
-import { hasApiKey } from './rag.js'
+import { fetchHomes, fetchStatus } from './api.js'
 
 export default function App() {
-  const [screen, setScreen] = useState('list') // 'list' | 'help'
+  const [screen, setScreen] = useState('list') // 'list' | 'help' | 'onboard'
   const [activeHomeId, setActiveHomeId] = useState(null)
+  const [homes, setHomes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
+  const [status, setStatus] = useState(null)
+
+  const loadHomes = useCallback(async () => {
+    setLoading(true)
+    try {
+      setHomes(await fetchHomes())
+      setLoadError(null)
+    } catch (err) {
+      setLoadError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    loadHomes()
+    fetchStatus().then(setStatus)
+  }, [loadHomes])
 
   const openHelp = (homeId = null) => {
     setActiveHomeId(homeId)
     setScreen('help')
   }
+
+  const live = status?.openai === 'configured'
 
   return (
     <div className="app">
@@ -20,7 +42,9 @@ export default function App() {
           <span className="brand-mark">▚</span>
           <div>
             <div className="brand-name">Property Concierge</div>
-            <div className="brand-sub">RAG demo · {homes.length} homes · 25+ fields each</div>
+            <div className="brand-sub">
+              {loading ? 'loading…' : `${homes.length} homes`} · 25+ fields each
+            </div>
           </div>
         </div>
         <nav className="nav">
@@ -30,17 +54,35 @@ export default function App() {
           <button className={screen === 'help' ? 'nav-btn active' : 'nav-btn'} onClick={() => openHelp(activeHomeId)}>
             Help / Ask
           </button>
-          <span className={hasApiKey() ? 'ai-pill live' : 'ai-pill mock'} title={hasApiKey() ? 'OpenAI key detected' : 'No key — offline demo mode'}>
-            {hasApiKey() ? '● OpenAI live' : '○ offline demo'}
+          <span
+            className={live ? 'ai-pill live' : 'ai-pill mock'}
+            title={live ? 'Server has an OpenAI key' : 'No key on the server — offline fallback answers'}
+          >
+            {live ? '● OpenAI live' : '○ offline demo'}
           </span>
         </nav>
       </header>
 
       <main className="main">
-        {screen === 'list' ? (
+        {loadError ? (
+          <div className="screen">
+            <div className="empty">
+              <p>Couldn't load properties: {loadError}</p>
+              <button className="link-btn" onClick={loadHomes}>
+                Retry
+              </button>
+            </div>
+          </div>
+        ) : loading ? (
+          <div className="screen">
+            <div className="empty">
+              <p>Loading properties…</p>
+            </div>
+          </div>
+        ) : screen === 'list' ? (
           <DoorList homes={homes} onAsk={openHelp} />
         ) : (
-          <HelpScreen homes={homes} initialHomeId={activeHomeId} onBack={() => setScreen('list')} />
+          <HelpScreen homes={homes} initialHomeId={activeHomeId} onBack={() => setScreen('list')} live={live} />
         )}
       </main>
     </div>

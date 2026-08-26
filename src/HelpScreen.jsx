@@ -2,7 +2,7 @@
 // grounded in that home's data, then ask anything (chips or free text).
 
 import { useEffect, useRef, useState } from 'react'
-import { answerQuestion, generateSuggestedQuestions, hasApiKey } from './rag.js'
+import { answerQuestion, generateSuggestedQuestions } from './api.js'
 
 // Minimal, dependency-free Markdown → HTML for the model's answers.
 // The model only emits **bold**, `-`/`*` bullets, and line breaks, so we
@@ -45,7 +45,7 @@ function renderMarkdown(src) {
   return { __html: html }
 }
 
-export default function HelpScreen({ homes, initialHomeId, onBack }) {
+export default function HelpScreen({ homes, initialHomeId, onBack, live }) {
   const [homeId, setHomeId] = useState(initialHomeId || '')
   const [suggested, setSuggested] = useState([])
   const [suggestSource, setSuggestSource] = useState(null)
@@ -85,9 +85,12 @@ export default function HelpScreen({ homes, initialHomeId, onBack }) {
     const q = question.trim()
     if (!q || !home || asking) return
     setInput('')
+    // Snapshot the thread BEFORE appending, so the model sees the prior turns
+    // as context and the new question exactly once.
+    const history = messages.map((m) => ({ role: m.role, content: m.text }))
     setMessages((m) => [...m, { role: 'user', text: q }])
     setAsking(true)
-    const res = await answerQuestion(home, q)
+    const res = await answerQuestion(home, q, history)
     setMessages((m) => [...m, { role: 'assistant', text: res.text, source: res.source }])
     setAsking(false)
   }
@@ -118,7 +121,7 @@ export default function HelpScreen({ homes, initialHomeId, onBack }) {
       ) : (
         <div className="concierge">
           <div className="ctx-note">
-            Grounded in <b>{home.propertyName}</b>'s profile · {hasApiKey() ? 'OpenAI' : 'offline demo'} ·{' '}
+            Grounded in <b>{home.propertyName}</b>'s profile · {live ? 'OpenAI' : 'offline demo'} ·{' '}
             {suggestSource === 'openai' ? 'starter questions written by AI from the data' : 'starter questions derived from present fields'}
           </div>
 
@@ -137,7 +140,8 @@ export default function HelpScreen({ homes, initialHomeId, onBack }) {
             {messages.length === 0 && !asking && (
               <div className="thread-hint">
                 Click a starter question or type your own below. Try a multi-part one like{' '}
-                <i>"arriving 11 PM with my dog and a car — what do I need?"</i>
+                <i>"arriving 11 PM with my dog and a car — what do I need?"</i>, then a follow-up
+                like <i>"what about the garage?"</i>
               </div>
             )}
             {messages.map((m, i) => (
