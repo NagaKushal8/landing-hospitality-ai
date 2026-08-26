@@ -117,22 +117,28 @@ function normalizeStatus(call) {
   return s || 'unknown'
 }
 
+// Bland labels turns `assistant` and `user`, where `user` is the property
+// contact. Relabelled to the AI/Contact shape the extraction prompt is written
+// against, so a transcript reads the same whichever provider produced it.
+const speakerOf = (who) =>
+  ['user', 'human', 'customer'].includes(String(who || '').toLowerCase()) ? 'Contact' : 'AI'
+
 export function extractTranscript(call) {
+  // The turn array is preferred: it gives clean per-line control, where
+  // concatenated_transcript arrives as one blob with " \n " separators.
+  if (Array.isArray(call?.transcripts) && call.transcripts.length) {
+    const lines = call.transcripts
+      .map((t) => `${speakerOf(t.user)}: ${String(t.text ?? '').trim()}`)
+      .filter((l) => l.length > 5)
+    if (lines.length) return lines.join('\n')
+  }
+
   if (typeof call?.concatenated_transcript === 'string' && call.concatenated_transcript.trim()) {
     return call.concatenated_transcript
-  }
-  // Fall back to the turn-by-turn array. `user` is the label of who spoke, and
-  // it is relabelled so the extractor sees the same "Contact:" / "AI:" shape it
-  // gets from the other provider.
-  if (Array.isArray(call?.transcripts)) {
-    const lines = call.transcripts
-      .map((t) => {
-        const who = String(t.user || '').toLowerCase()
-        const speaker = who === 'user' || who === 'human' ? 'Contact' : 'AI'
-        return `${speaker}: ${t.text ?? ''}`
-      })
-      .filter((l) => l.trim().length > 5)
-    if (lines.length) return lines.join('\n')
+      .split(/\s*\n\s*/)
+      .map((l) => l.replace(/^(assistant|user|human|customer)\s*:\s*/i, (_, w) => `${speakerOf(w)}: `).trim())
+      .filter(Boolean)
+      .join('\n')
   }
   return ''
 }
