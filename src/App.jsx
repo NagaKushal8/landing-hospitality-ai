@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import DoorList from './DoorList.jsx'
 import HelpScreen from './HelpScreen.jsx'
+import Onboard from './Onboard.jsx'
 import { fetchHomes, fetchStatus } from './api.js'
 
 export default function App() {
@@ -54,6 +55,9 @@ export default function App() {
           <button className={screen === 'help' ? 'nav-btn active' : 'nav-btn'} onClick={() => openHelp(activeHomeId)}>
             Help / Ask
           </button>
+          <button className={screen === 'onboard' ? 'nav-btn active' : 'nav-btn'} onClick={() => setScreen('onboard')}>
+            Onboard
+          </button>
           <span
             className={live ? 'ai-pill live' : 'ai-pill mock'}
             title={live ? 'Server has an OpenAI key' : 'No key on the server — offline fallback answers'}
@@ -79,6 +83,14 @@ export default function App() {
               <p>Loading properties…</p>
             </div>
           </div>
+        ) : screen === 'onboard' ? (
+          <Onboard
+            onOpenHelp={(id) => {
+              // Reload first so the freshly-onboarded property is in the list
+              // the concierge screen picks from.
+              loadHomes().then(() => openHelp(id))
+            }}
+          />
         ) : screen === 'list' ? (
           <DoorList homes={homes} onAsk={openHelp} />
         ) : (
