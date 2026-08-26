@@ -1,4 +1,4 @@
-# Landing — Check-in, solved from both ends
+# Landing — Improving the check-in experience
 
 Corporate housing breaks at check-in. A guest lands at 11pm outside a building
 they have never seen: which door, is there a code or a fob or a lockbox, where

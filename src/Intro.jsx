@@ -6,6 +6,10 @@
 // onboarding pipeline exists because they have to be collected first. Framing
 // this as "property data management" would be true and would lose the reader.
 //
+// The heading names the area of work rather than opening on a scene, so it
+// matches the words the problem was described in. The scene follows
+// immediately underneath, which is where it does its work.
+//
 // Plain on purpose. Whoever opens the link has about thirty seconds and no
 // context. No pitch, no metrics, no hero copy.
 
@@ -13,7 +17,7 @@ export default function Intro({ onGo }) {
   return (
     <div className="screen intro">
       <div className="intro-lede">
-        <h1>Check-in is where it breaks.</h1>
+        <h1>Improving the check-in experience</h1>
         <p>
           A guest lands at 11pm outside a building they have never seen. Which door? Is there a code, or
           a fob, or a lockbox? Where does the garage remote live? What is the Wi-Fi?
