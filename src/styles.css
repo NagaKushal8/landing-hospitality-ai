@@ -239,15 +239,19 @@ body {
 .onboard-form input:focus, .call-row input:focus { outline: none; border-color: var(--accent-dim); }
 .form-row { display: flex; gap: 12px; }
 .req { color: var(--warn); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
-/* Primary actions only. The scope buttons are opt out here: a bare element
-   selector outranks .scope-opt, so without the exclusion they inherit the solid
-   fill meant for Start call and read as a pressed button on hover. */
-.onboard button:not(.scope-opt), .call-row button, .finish-row button {
+/* Primary actions only.
+
+   A bare element selector (.onboard button = 0,1,1) outranks a single class
+   (.link-btn = 0,1,0), so without this exclusion every text-link button inside
+   the onboarding screen — "re-extract", "skip to end" — renders as a solid
+   teal pill. Any new non-primary button in here needs .link-btn or its own
+   exclusion, or it will silently inherit this. */
+.onboard button:not(.link-btn), .call-row button, .finish-row button {
   background: var(--accent-dim); color: #eafffb; border: none; border-radius: 8px;
   padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; align-self: flex-start;
 }
-.onboard button:not(.scope-opt):hover:not(:disabled) { background: var(--accent); color: #06231f; }
-.onboard button:not(.scope-opt):disabled { opacity: 0.45; cursor: not-allowed; }
+.onboard button:not(.link-btn):hover:not(:disabled) { background: var(--accent); color: #06231f; }
+.onboard button:not(.link-btn):disabled { opacity: 0.45; cursor: not-allowed; }
 .hint { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 8px 0 0; }
 .hint b { color: var(--text); }
 
@@ -321,26 +325,6 @@ body {
 .gap-group { margin-top: 14px; }
 .gap-group-label { font-size: 12px; color: var(--muted); margin-bottom: 7px; }
 .gap-group-label b { color: var(--warn); }
-.scope-picker { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-.scope-opt {
-  flex: 1; min-width: 190px; text-align: left; cursor: pointer;
-  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
-  padding: 11px 13px; color: var(--muted); display: block;
-}
-.scope-opt:hover:not(:disabled):not(.active) {
-  border-color: var(--accent-dim); background: var(--chip); color: var(--text);
-}
-/* Selected state has to stay obvious while the OTHER option is hovered, so it
-   carries a ring rather than just a border colour. */
-.scope-opt.active {
-  border-color: var(--accent); background: var(--chip); color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--accent);
-}
-.scope-opt:disabled { opacity: 0.5; cursor: not-allowed; }
-.scope-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.scope-n { font-size: 19px; font-weight: 700; color: var(--accent); margin-right: 7px; }
-.scope-label { font-size: 13.5px; font-weight: 600; color: var(--text); }
-.scope-why { display: block; font-size: 11.5px; margin-top: 3px; }
 
 /* ---- Anything a person typed reads green ------------------------------- */
 /*
@@ -407,3 +391,34 @@ body {
 .t-ai .t-text { color: var(--muted); }
 .t-note { color: var(--muted); font-style: italic; padding-left: 60px; }
 .t-cursor { color: var(--accent); animation: pulse 1s ease-in-out infinite; }
+
+/* ---- Call plan --------------------------------------------------------- */
+.call-plan {
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  margin-bottom: 14px; background: var(--panel-2);
+}
+.plan-part { display: flex; gap: 12px; padding: 13px 15px; }
+.plan-part + .plan-part { border-top: 1px solid var(--line); }
+.plan-part.off { opacity: 0.55; }
+.plan-n {
+  flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid;
+  place-items: center; font-size: 11px; font-weight: 700; margin-top: 1px;
+  background: var(--accent-dim); color: #06231f;
+}
+.plan-part.off .plan-n { background: var(--line); color: var(--muted); }
+.plan-body { flex: 1; min-width: 0; }
+.plan-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+}
+.plan-head b { font-size: 13.5px; }
+.plan-count { font-size: 11.5px; color: var(--muted); }
+.plan-why { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.plan-why i { color: var(--text); font-style: italic; }
+.plan-toggle {
+  display: flex; align-items: center; gap: 6px; cursor: pointer;
+  font-size: 11.5px; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.04em; user-select: none;
+}
+.plan-toggle input { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+.plan-toggle input:disabled { cursor: not-allowed; }

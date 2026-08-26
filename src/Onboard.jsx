@@ -189,6 +189,7 @@ export default function Onboard({ onOpenHelp }) {
   // Rough, but the useful signal is "three minutes" versus "eight" — a property
   // manager's patience is the real constraint, not our field count.
   const estMinutes = Math.max(2, Math.round((askCount * 20 + 40) / 60))
+  const part1Minutes = Math.max(2, Math.round((criticalGaps.length * 20 + 40) / 60))
 
   // Research quality tracks address quality closely. "90 fisher ave" made the
   // model guess a city and it found five fields; the same address with a city and
@@ -309,39 +310,58 @@ export default function Onboard({ onOpenHelp }) {
 
       {home && gaps.length > 0 && (
         <Step n="3" title="Call the property contact" subtitle="A real outbound call. Natural conversation, not a questionnaire." done={Boolean(result)} active={Boolean(!result)}>
-          <div className="scope-picker">
-            {[
-              { id: 'critical', n: criticalGaps.length, label: 'Critical only', why: 'access, codes, Wi-Fi, emergency' },
-              { id: 'all', n: gaps.length, label: 'Ask to continue', why: 'critical first, then the rest only with consent' },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                className={scope === opt.id ? 'scope-opt active' : 'scope-opt'}
-                onClick={() => setScope(opt.id)}
-                disabled={calling}
-              >
-                <span className="scope-n">{opt.n}</span>
-                <span className="scope-label">{opt.label}</span>
-                <span className="scope-why">{opt.why}</span>
-              </button>
-            ))}
-          </div>
-          <p className="hint">
-            {scope === 'critical' ? (
-              <>
-                Asking the <b>{criticalGaps.length} critical</b> topics only — roughly a{' '}
-                <b>{estMinutes}-minute</b> call. The rest stay as gaps for a later call.
-              </>
-            ) : (
-              <>
-                The agent covers the <b>{criticalGaps.length} critical</b> topics first, then <i>asks permission</i>{' '}
-                before continuing to the other <b>{otherGaps.length}</b>. If the contact declines it ends there —
-                so this is a <b>{Math.max(2, Math.round((criticalGaps.length * 20 + 40) / 60))}-minute</b> call that
-                only runs to <b>{estMinutes}</b> if they agree.
-              </>
+          {/* The call has two halves and the second one is conditional on a
+              live yes, which two labelled buttons never managed to say. Shown
+              as the plan itself: part one is fixed, part two is a switch, and
+              the copy makes clear the actual decision happens on the phone. */}
+          <div className="call-plan">
+            <div className="plan-part">
+              <span className="plan-n">1</span>
+              <div className="plan-body">
+                <div className="plan-head">
+                  <b>Always asked</b>
+                  <span className="plan-count">{criticalGaps.length} topics · ~{part1Minutes} min</span>
+                </div>
+                <p className="plan-why">
+                  The details that leave a guest at a locked door — entry, codes, Wi-Fi, emergency contact.
+                </p>
+              </div>
+            </div>
+
+            {otherGaps.length > 0 && (
+              <div className={scope === 'all' ? 'plan-part' : 'plan-part off'}>
+                <span className="plan-n">2</span>
+                <div className="plan-body">
+                  <div className="plan-head">
+                    <b>Only if they agree — on the call</b>
+                    <label className="plan-toggle">
+                      <input
+                        type="checkbox"
+                        checked={scope === 'all'}
+                        onChange={(e) => setScope(e.target.checked ? 'all' : 'critical')}
+                        disabled={calling}
+                      />
+                      <span>{scope === 'all' ? 'offer it' : 'skip it'}</span>
+                    </label>
+                  </div>
+                  <p className="plan-why">
+                    {scope === 'all' ? (
+                      <>
+                        After part 1 the agent stops and asks <i>“do you have another couple of minutes?”</i> If
+                        they say anything but yes, the call ends there. {otherGaps.length} topics · +
+                        {estMinutes - part1Minutes} min if they agree.
+                      </>
+                    ) : (
+                      <>
+                        Not offered on this call. These {otherGaps.length} stay as gaps and a later call can pick
+                        them up.
+                      </>
+                    )}
+                  </p>
+                </div>
+              </div>
             )}
-          </p>
+          </div>
 
           <div className="call-row">
             <label>
