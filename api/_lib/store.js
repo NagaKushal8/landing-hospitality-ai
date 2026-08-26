@@ -12,9 +12,16 @@ import { supabase, isConfigured } from './supabase.js'
 let seedCache = null
 
 function seed() {
-  if (!seedCache) {
+  if (seedCache) return seedCache
+  try {
     const url = new URL('../../src/data/homes.json', import.meta.url)
     seedCache = JSON.parse(readFileSync(url, 'utf8'))
+  } catch (err) {
+    // The read is not statically traceable, so it depends on vercel.json's
+    // includeFiles having bundled the file. If that ever drifts, say so
+    // plainly rather than surfacing an ENOENT stack to the UI.
+    console.error('[store] seed file unavailable:', err.message)
+    seedCache = []
   }
   return seedCache
 }
