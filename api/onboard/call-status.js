@@ -47,9 +47,10 @@ export default async function handler(req, res) {
 
     await updateCall(callId, { status: live.status, transcript: live.transcript })
 
-    // Vapi reports what the call actually cost. Swap it in for the up-front
-    // reservation so a short call does not keep holding a full one's budget.
-    if (typeof live.raw?.cost === 'number') await reconcile(callId, live.raw.cost)
+    // The provider reports what the call actually cost. Swap it in for the
+    // up-front reservation so a short call does not keep holding a full one's
+    // budget. Normalised by the adapter, so this does not care which vendor.
+    if (typeof live.cost === 'number') await reconcile(callId, live.cost)
 
     const home = await getHome(record.property_id)
     if (!home) return res.status(404).json({ error: `No property ${record.property_id}` })

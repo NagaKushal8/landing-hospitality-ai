@@ -1,87 +1,23 @@
-// voice.js — stage two of onboarding: an outbound call to the property contact.
+// voice.js — the agent brief, and dispatch to whichever provider dials.
 //
-// The assistant is transient (built fresh per call and sent inline) rather than
-// configured in the Vapi dashboard. That is the whole point: the gap list is
-// computed at dial time, so the agent is briefed on exactly what this property
-// is still missing and nothing else. A dashboard assistant would drift from the
-// registry the moment a field changed.
+// The brief is the valuable part and it is provider-agnostic: it is built from
+// the gap list computed at dial time, so the agent is told exactly what this
+// property is still missing and nothing else. Which vendor turns that into a
+// phone call is an implementation detail, selected by VOICE_PROVIDER.
 //
 // Results are collected by polling rather than a webhook. Polling needs no
 // public URL, so it works from a laptop with no tunnel — and on serverless it
 // avoids holding a function open for the length of a phone call.
 
-import { computeGaps, filledSummary } from '../../shared/field-registry.js'
+import { filledSummary } from '../../shared/field-registry.js'
 
-const BASE = 'https://api.vapi.ai'
+const PROVIDER = (process.env.VOICE_PROVIDER || 'vapi').toLowerCase()
 
-const MODEL = process.env.VAPI_MODEL || 'gpt-4o'
-const VOICE_PROVIDER = process.env.VAPI_VOICE_PROVIDER
-const VOICE_ID = process.env.VAPI_VOICE_ID
+export const providerName = () => PROVIDER
 
-// Calls are metered per minute. Five minutes is what we promise the contact;
-// eight is a hard stop so a call that goes sideways cannot run up a bill.
-const MAX_CALL_SECONDS = Number(process.env.VAPI_MAX_SECONDS || 480)
-
-export function isConfigured() {
-  return Boolean(process.env.VAPI_API_KEY && process.env.VAPI_PHONE_NUMBER_ID)
-}
-
-// Vapi's failures are mostly operational rather than programming errors — a
-// spent daily quota, an unverified number, no credit left. Raw JSON in a red
-// box makes those read like a crash, so translate the ones that actually
-// happen into what to do about them.
-function explainVapiError(status, text) {
-  let payload = {}
-  try {
-    payload = JSON.parse(text)
-  } catch {
-    /* not JSON — fall through to the raw text */
-  }
-  const msg = String(payload.message || text || '')
-  const low = msg.toLowerCase()
-
-  if (low.includes('daily outbound call limit')) {
-    return (
-      'Vapi will not place the call: free Vapi numbers have a daily outbound limit and this one has hit it. ' +
-      'Cheapest fix is to add a payment method in Vapi — that is pay-as-you-go with no monthly fee, and the cap ' +
-      'appears to be a gate on card-less accounts. Failing that, import a Twilio number (Phone Numbers -> Import, ' +
-      '$1.15/mo, definitively uncapped) and put its id in VAPI_PHONE_NUMBER_ID. Do not buy the Team plan; it will not help.'
-    )
-  }
-  if (low.includes('insufficient') || low.includes('credit') || low.includes('balance')) {
-    return `Vapi rejected the call for billing reasons: ${msg}. Check the credit balance in the Vapi dashboard.`
-  }
-  if (status === 401 || status === 403) {
-    return (
-      'Vapi rejected the API key. POST /call is privately scoped, so it needs the PRIVATE key from ' +
-      'Dashboard -> API Keys — the public key only works for web calls.'
-    )
-  }
-  if (low.includes('phonenumberid') || low.includes('phone number')) {
-    return `Vapi did not accept the phone number id: ${msg}. VAPI_PHONE_NUMBER_ID must be the number's UUID, not the phone number itself.`
-  }
-  if (low.includes('customer') || low.includes('e164') || low.includes('invalid number')) {
-    return `Vapi did not accept the number being dialled: ${msg}.`
-  }
-  return `Vapi ${status}: ${msg.slice(0, 300)}`
-}
-
-async function vapi(path, { method = 'GET', body } = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers: {
-      Authorization: `Bearer ${process.env.VAPI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    ...(body ? { body: JSON.stringify(body) } : {}),
-  })
-  const text = await res.text()
-  if (!res.ok) {
-    // Keep the raw body in the server log; the caller gets the readable version.
-    console.error(`[vapi] ${method} ${path} -> ${res.status}: ${text.slice(0, 500)}`)
-    throw new Error(explainVapiError(res.status, text))
-  }
-  return text ? JSON.parse(text) : {}
+async function impl() {
+  if (PROVIDER === 'bland') return import('./voice-bland.js')
+  return import('./voice-vapi.js')
 }
 
 // ---- The brief -------------------------------------------------------------
@@ -139,70 +75,21 @@ export function buildFirstMessage(home) {
   return `Hi! I'm an AI assistant calling on behalf of the property team to verify a few access and check-in details for ${where}. It should only take about five minutes — is now an okay time?`
 }
 
-// ---- Calls -----------------------------------------------------------------
+// ---- Provider dispatch -----------------------------------------------------
+//
+// Every provider exposes the same three things: whether it can dial, how to
+// start a call, and how to read one back. Everything downstream — extraction,
+// the spend ledger, the replay — is written against this shape, not a vendor.
 
-export async function startCall({ home, phoneNumber }) {
-  if (!isConfigured()) {
-    throw new Error('Vapi is not configured (VAPI_API_KEY / VAPI_PHONE_NUMBER_ID)')
-  }
-
-  const gaps = computeGaps(home)
-  if (!gaps.length) {
-    throw new Error('Nothing left to ask about — this property has no gaps a call could fill.')
-  }
-
-  const assistant = {
-    name: 'Property Details Verification',
-    firstMessage: buildFirstMessage(home),
-    model: {
-      provider: 'openai',
-      model: MODEL,
-      messages: [{ role: 'system', content: buildSystemPrompt(home, gaps) }],
-    },
-    maxDurationSeconds: MAX_CALL_SECONDS,
-    ...(VOICE_PROVIDER && VOICE_ID ? { voice: { provider: VOICE_PROVIDER, voiceId: VOICE_ID } } : {}),
-  }
-
-  const call = await vapi('/call', {
-    method: 'POST',
-    body: {
-      phoneNumberId: process.env.VAPI_PHONE_NUMBER_ID,
-      customer: { number: phoneNumber },
-      assistant,
-    },
-  })
-
-  if (!call.id) throw new Error(`Vapi did not return a call id: ${JSON.stringify(call).slice(0, 300)}`)
-  return { callId: call.id, status: call.status || 'queued', gaps }
+export async function isConfigured() {
+  return (await impl()).isConfigured()
 }
 
-// Vapi has moved the transcript between top-level and `artifact` across
-// versions, so read every place it has lived and reconstruct from the message
-// list as a last resort.
-export function extractTranscript(call) {
-  if (typeof call?.artifact?.transcript === 'string' && call.artifact.transcript.trim()) {
-    return call.artifact.transcript
-  }
-  if (typeof call?.transcript === 'string' && call.transcript.trim()) {
-    return call.transcript
-  }
-  const messages = call?.artifact?.messages || call?.messages
-  if (Array.isArray(messages)) {
-    const lines = messages
-      .filter((m) => m.role === 'user' || m.role === 'assistant' || m.role === 'bot')
-      .map((m) => `${m.role === 'user' ? 'Contact' : 'AI'}: ${m.message ?? m.content ?? ''}`)
-      .filter((l) => l.trim().length > 10)
-    if (lines.length) return lines.join('\n')
-  }
-  return ''
+export async function startCall(args) {
+  return (await impl()).startCall(args)
 }
 
+/** @returns {{raw, status, endedReason, transcript, cost}} */
 export async function fetchCall(callId) {
-  const call = await vapi(`/call/${encodeURIComponent(callId)}`)
-  return {
-    raw: call,
-    status: call.status || 'unknown',
-    endedReason: call.endedReason || null,
-    transcript: extractTranscript(call),
-  }
+  return (await impl()).fetchCall(callId)
 }

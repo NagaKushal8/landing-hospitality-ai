@@ -7,7 +7,7 @@
 // degrades to a recording rather than a red box.
 
 import { getHome, createCall, readOnly } from '../_lib/store.js'
-import { startCall, isConfigured, buildSystemPrompt, buildFirstMessage } from '../_lib/voice.js'
+import { startCall, isConfigured, buildSystemPrompt, buildFirstMessage, providerName } from '../_lib/voice.js'
 import { checkAllowance, record, ESTIMATE } from '../_lib/budget.js'
 import { getReplay } from '../_lib/replay.js'
 import { computeGaps } from '../../shared/field-registry.js'
@@ -78,9 +78,10 @@ export default async function handler(req, res) {
       })
     }
 
+    const voiceReady = await isConfigured()
     const blocked =
       !allowance.ok ? { why: 'budget', detail: allowance }
-      : !isConfigured() ? { why: 'vapi-unconfigured', detail: null }
+      : !voiceReady ? { why: 'vapi-unconfigured', detail: null }
       : readOnly() ? { why: 'store-unconfigured', detail: null }
       : null
 
@@ -106,7 +107,7 @@ export default async function handler(req, res) {
     } catch (err) {
       // Vapi refused — a spent daily quota, no credit, a bad number. The demo
       // still has something to show.
-      console.error('[call] Vapi refused:', err.message)
+      console.error(`[call] ${providerName()} refused:`, err.message)
       return res.status(200).json({
         fallback: 'vapi-refused',
         reason: err.message,

@@ -130,6 +130,40 @@ is dead when they open it. `vercel.json` registers a daily cron against
 `/api/health` to keep it warm — that only runs once deployed, so if you leave the
 project idle before then, wake it from the dashboard.
 
+## Setting up Bland (alternative to Vapi)
+
+Bland is the second implemented provider, added because Vapi's own phone
+numbers rejected every outbound call on an account with no payment method,
+while Bland connected on the first attempt without one. The agent brief,
+extraction, spend ceiling and replay are identical either way — only the vendor
+that dials changes.
+
+1. Sign up at [bland.ai](https://bland.ai) and copy the API key.
+2. In `.env.local` (and your Vercel environment):
+
+   ```
+   VOICE_PROVIDER=bland
+   BLAND_API_KEY=...
+   ```
+
+3. `npm run call:prompt <propertyId>` prints the exact brief for a property if
+   you want to try it by hand in their dashboard first. Worth doing before
+   wiring anything: it answers "does outbound actually work on this account"
+   for the price of one call.
+
+Differences the adapter absorbs, so nothing downstream has to care:
+
+- Bland's `task` is the entire agent brief; there is no separate system message.
+- It reports completion as `completed: true` / status `"completed"`, where the
+  rest of this codebase speaks Vapi's `"ended"`.
+- Cost comes back as `price` rather than `cost`.
+- Its docs and examples disagree on whether the API key is sent bare or with a
+  `Bearer` prefix, so the adapter tries bare and retries once on a 401.
+
+Pricing is roughly a wash — Bland is ~$0.14/min all-in on the free plan plus
+$0.015 per attempt (charged even when a call fails), against Vapi's $0.05/min
+platform fee plus pass-through that lands around $0.11–0.15/min.
+
 ## Setting up Vapi
 
 The voice agent is the only part that costs real money and the only part that

@@ -5,13 +5,14 @@
 import { isConfigured } from './_lib/supabase.js'
 import { listHomes, readOnly } from './_lib/store.js'
 import { hasApiKey } from './_lib/llm.js'
+import { isConfigured as voiceConfigured, providerName } from './_lib/voice.js'
 
 export default async function handler(req, res) {
   const status = {
     ok: true,
     supabase: isConfigured() ? 'configured' : 'not configured (serving bundled seed data)',
     openai: hasApiKey() ? 'configured' : 'not configured',
-    vapi: process.env.VAPI_API_KEY ? 'configured' : 'not configured',
+    voice: `${providerName()}: ${(await voiceConfigured()) ? 'configured' : 'not configured'}`,
     readOnly: readOnly(),
   }
   try {
