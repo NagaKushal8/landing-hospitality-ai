@@ -239,12 +239,15 @@ body {
 .onboard-form input:focus, .call-row input:focus { outline: none; border-color: var(--accent-dim); }
 .form-row { display: flex; gap: 12px; }
 .req { color: var(--warn); font-size: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
-.onboard button, .call-row button, .finish-row button {
+/* Primary actions only. The scope buttons are opt out here: a bare element
+   selector outranks .scope-opt, so without the exclusion they inherit the solid
+   fill meant for Start call and read as a pressed button on hover. */
+.onboard button:not(.scope-opt), .call-row button, .finish-row button {
   background: var(--accent-dim); color: #eafffb; border: none; border-radius: 8px;
   padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; align-self: flex-start;
 }
-.onboard button:hover:not(:disabled) { background: var(--accent); color: #06231f; }
-.onboard button:disabled { opacity: 0.45; cursor: not-allowed; }
+.onboard button:not(.scope-opt):hover:not(:disabled) { background: var(--accent); color: #06231f; }
+.onboard button:not(.scope-opt):disabled { opacity: 0.45; cursor: not-allowed; }
 .hint { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin: 8px 0 0; }
 .hint b { color: var(--text); }
 
@@ -275,11 +278,6 @@ body {
   margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
 }
 .link-btn.tiny { font-size: 11px; padding: 0; }
-.transcript pre {
-  background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
-  font-size: 12px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
-  max-height: 380px; overflow-y: auto; margin: 0; color: var(--muted);
-}
 .captured {
   border: 1px solid var(--line); border-left: 2px solid var(--accent-dim); border-radius: 8px;
   padding: 9px 12px; margin-bottom: 8px; background: var(--panel-2);
@@ -312,7 +310,7 @@ body {
 .replay-wrap { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px; }
 .replay .banner { font-size: 12.5px; line-height: 1.5; }
 .replay-why { margin-top: 6px; color: var(--muted); }
-.replay .transcript pre { min-height: 260px; }
+.replay .transcript-body { min-height: 260px; }
 .pin-row { margin-top: 14px; align-items: flex-end; }
 .pin-row input { letter-spacing: 0.18em; }
 .pin-err { font-size: 12px; color: #ff9b8a; align-self: center; }
@@ -329,9 +327,17 @@ body {
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
   padding: 11px 13px; color: var(--muted); display: block;
 }
-.scope-opt:hover:not(:disabled) { border-color: var(--accent-dim); }
-.scope-opt.active { border-color: var(--accent); background: var(--chip); color: var(--text); }
+.scope-opt:hover:not(:disabled):not(.active) {
+  border-color: var(--accent-dim); background: var(--chip); color: var(--text);
+}
+/* Selected state has to stay obvious while the OTHER option is hovered, so it
+   carries a ring rather than just a border colour. */
+.scope-opt.active {
+  border-color: var(--accent); background: var(--chip); color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
 .scope-opt:disabled { opacity: 0.5; cursor: not-allowed; }
+.scope-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .scope-n { font-size: 19px; font-weight: 700; color: var(--accent); margin-right: 7px; }
 .scope-label { font-size: 13.5px; font-weight: 600; color: var(--text); }
 .scope-why { display: block; font-size: 11.5px; margin-top: 3px; }
@@ -378,3 +384,26 @@ body {
 /* NOTE: the source pills deliberately keep their own palette. voice is already
    green, so tinting manual green too would make two provenance sources
    indistinguishable — which is the one thing those pills exist to do. */
+
+/* ---- Transcript -------------------------------------------------------- */
+.transcript-body {
+  background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px; margin: 0; font-size: 12.5px; line-height: 1.5;
+  max-height: 380px; overflow-y: auto;
+}
+.transcript-scroll { max-height: 380px; overflow-y: auto; }
+.transcript-scroll .transcript-body { max-height: none; overflow: visible; }
+.t-line { display: flex; gap: 8px; padding: 3px 0; }
+.t-who {
+  flex: none; width: 52px; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.05em; padding-top: 2px; font-weight: 600;
+}
+.t-text { flex: 1; }
+/* The contact's answers are the only part of a call that becomes data, and
+   green is what a person said everywhere else in this app. */
+.t-contact .t-who { color: var(--accent); }
+.t-contact .t-text { color: #8ff0e4; }
+.t-ai .t-who { color: var(--muted); }
+.t-ai .t-text { color: var(--muted); }
+.t-note { color: var(--muted); font-style: italic; padding-left: 60px; }
+.t-cursor { color: var(--accent); animation: pulse 1s ease-in-out infinite; }

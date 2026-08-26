@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from 'react'
 import { enrichProperty, startCall, callStatus, reextract } from './api.js'
 import { FieldGrid, SourcePill } from './Field.jsx'
 import Replay from './Replay.jsx'
+import Transcript from './Transcript.jsx'
 
 const POLL_MS = 3000
 
@@ -397,7 +398,7 @@ export default function Onboard({ onOpenHelp }) {
           <div className="result-cols">
             <div className="transcript">
               <div className="col-label">Transcript</div>
-              <pre>{transcript || '(no transcript)'}</pre>
+              <Transcript text={transcript} />
               {recordingUrl && (
                 <audio className="replay-audio" controls preload="none" src={recordingUrl}>
                   Your browser cannot play this recording.

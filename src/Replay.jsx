@@ -10,6 +10,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { SourcePill } from './Field.jsx'
+import Transcript from './Transcript.jsx'
 
 const LINE_MS = 1100
 const FIELD_MS = 700
@@ -91,10 +92,12 @@ export default function Replay({ replay, reason }) {
               </button>
             )}
           </div>
-          <pre ref={scrollRef}>
-            {lines.slice(0, lineCount).join('\n')}
-            {playing && lineCount < lines.length ? '\n▍' : ''}
-          </pre>
+          <div className="transcript-scroll" ref={scrollRef}>
+            <Transcript
+              text={lines.slice(0, lineCount).join('\n')}
+              live={playing && lineCount < lines.length}
+            />
+          </div>
         </div>
 
         <div className="extracted">
