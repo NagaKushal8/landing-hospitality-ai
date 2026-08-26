@@ -140,7 +140,7 @@ export default function HelpScreen({ homes, initialHomeId, onBack, live }) {
             {messages.length === 0 && !asking && (
               <div className="thread-hint">
                 Click a starter question or type your own below. Try a multi-part one like{' '}
-                <i>"arriving 11 PM with my dog and a car — what do I need?"</i>, then a follow-up
+                <i>"arriving 11 PM with my dog and a car, what do I need?"</i>, then a follow-up
                 like <i>"what about the garage?"</i>
               </div>
             )}

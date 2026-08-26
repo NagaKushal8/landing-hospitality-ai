@@ -17,7 +17,7 @@ const POLL_MS = 3000
 const STATUS_COPY = {
   queued: 'Queued with the carrier…',
   ringing: 'Ringing…',
-  'in-progress': 'On the call — talking to the contact',
+  'in-progress': 'On the call, talking to the contact',
   forwarding: 'Forwarding…',
   ended: 'Call ended',
   failed: 'Call failed',
@@ -29,9 +29,9 @@ const STATUS_COPY = {
 // emailed and opened later, not a bug. They read as such.
 const FALLBACK_COPY = {
   budget:
-    'This demo has a fixed spend ceiling and it has been reached, so live calls are off. Everything below is from a call that actually happened.',
+    'This demo has a spending limit and it has been hit, so live calls are off. Everything below is from a call that really happened.',
   'call-refused':
-    'The phone provider declined this call — a free number has a daily allowance and it is spent. Here is a call that already went through.',
+    'The phone provider turned this call down. Free numbers only allow so many a day, and that is used up. Here is a call that already went through.',
   'voice-unconfigured': 'Live calling is not configured on this deployment. Here is a recorded call.',
   'store-unconfigured': 'The database is not configured on this deployment, so results could not be saved. Here is a recorded call.',
 }
@@ -207,15 +207,15 @@ export default function Onboard({ onOpenHelp }) {
       <div className="screen-intro">
         <h1>Onboard a property</h1>
         <p>
-          The concierge can only answer what someone entered. This is the other half: research
-          what's public, work out what's <b>still missing</b>, then have an agent phone the property
-          contact for exactly that — and nothing else.
+          The chat can only answer what someone put in. This is the other half. It looks up what's
+          public, works out what's <b>still missing</b>, then has an agent phone the property contact
+          about those, and nothing else.
         </p>
       </div>
 
       {error && <div className="banner error">{error}</div>}
 
-      <Step n="1" title="Find what's public" subtitle="Address, unit mix, amenities, general parking — researched from listing and building pages." done={Boolean(enrichment)} active={!enrichment}>
+      <Step n="1" title="Find what's public" subtitle="Address, beds and baths, amenities, parking. Whatever the building has online." done={Boolean(enrichment)} active={!enrichment}>
         <form className="onboard-form" onSubmit={runEnrich}>
           <label>
             Address <span className="req">required</span>
@@ -243,7 +243,7 @@ export default function Onboard({ onOpenHelp }) {
           </div>
           {addressLooksThin && (
             <p className="hint warn-hint">
-              Add the city and state — <b>“90 Fisher Ave, Boston, MA”</b> rather than “90 fisher ave”.
+              Add the city and state. <b>“90 Fisher Ave, Boston, MA”</b> works much better than “90 fisher ave”.
               Every field the research misses becomes a question someone has to answer on the phone.
             </p>
           )}
@@ -255,7 +255,7 @@ export default function Onboard({ onOpenHelp }) {
 
         {enrichment && (
           <div className="enrich-result">
-            {enrichment.mock && <div className="banner warn">MOCK_ENRICH is on — this is stub data, no web search ran.</div>}
+            {enrichment.mock && <div className="banner warn">MOCK_ENRICH is on, so this is fake data. No web search ran.</div>}
             <p className="hint">
               Filled <b>{enrichment.applied.length}</b> fields from public sources.
               {enrichment.notes && ` ${enrichment.notes}`}
@@ -268,7 +268,7 @@ export default function Onboard({ onOpenHelp }) {
       {home && (
         <Step n="2" title="What's still missing" subtitle="Nobody publishes a door code. These are the fields only the property contact knows." done={Boolean(result)} active={!result}>
           {gaps.length === 0 ? (
-            <p className="hint">Nothing left — this property is fully populated.</p>
+            <p className="hint">Nothing left. This property is fully filled in.</p>
           ) : (
             <>
               <p className="hint">
@@ -278,7 +278,7 @@ export default function Onboard({ onOpenHelp }) {
 
               <div className="gap-group">
                 <div className="gap-group-label">
-                  <b>{criticalGaps.length} critical</b> — a guest is stuck at the door without these
+                  <b>{criticalGaps.length} critical</b>. A guest is stuck at the door without these
                 </div>
                 <div className="gap-chips">
                   {criticalGaps.map((g) => (
@@ -323,7 +323,7 @@ export default function Onboard({ onOpenHelp }) {
                   <span className="plan-count">{criticalGaps.length} topics · ~{part1Minutes} min</span>
                 </div>
                 <p className="plan-why">
-                  The details that leave a guest at a locked door — entry, codes, Wi-Fi, emergency contact.
+                  The things that leave a guest stuck at the door. Entry, codes, Wi-Fi, who to call.
                 </p>
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function Onboard({ onOpenHelp }) {
                 <span className="plan-n">2</span>
                 <div className="plan-body">
                   <div className="plan-head">
-                    <b>Only if they agree — on the call</b>
+                    <b>Only if they agree, on the call</b>
                     <label className="plan-toggle">
                       <input
                         type="checkbox"
@@ -372,7 +372,7 @@ export default function Onboard({ onOpenHelp }) {
               {calling ? 'Calling…' : 'Start call'}
             </button>
           </div>
-          <p className="hint">Put in your own number and answer it — you play the property manager.</p>
+          <p className="hint">Put in your own number and answer it. You play the property manager.</p>
 
           {pinPrompt?.pinConfigured && (
             <form
@@ -470,7 +470,7 @@ export default function Onboard({ onOpenHelp }) {
               Ask the concierge about this home →
             </button>
             <span className="hint">
-              Everything captured above is live in the record now — no review step.
+              Everything above is saved to the property already. There is no review step.
             </span>
           </div>
         </Step>

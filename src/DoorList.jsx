@@ -43,9 +43,9 @@ export default function DoorList({ homes, onAsk }) {
       <div className="screen-intro">
         <h1>Doors</h1>
         <p>
-          Every home carries 25+ operational facts — access codes, parking, trash, hot water, pets, checkout.
-          Across 6,000+ homes that's ~180,000 details no static FAQ or handbook can keep current. Open <b>Help / Ask</b> on
-          any home to query just that property.
+          Every home has 25+ check-in facts. Access codes, parking, trash, hot water, pets, checkout.
+          Across thousands of homes that adds up fast, and no handbook stays up to date. Open
+          <b>Help / Ask</b> to ask about just one home.
         </p>
       </div>
       <div className="cards">

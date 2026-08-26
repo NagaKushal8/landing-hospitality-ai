@@ -1,32 +1,31 @@
 # Landing — Improving the check-in experience
 
-A guest reaches a building at 11pm. Which door? Is there a code, a fob, a
-lockbox? Where is the garage remote?
+A guest gets to the building at 11pm. Which door? Is there a code, a fob, a
+lockbox? Where's the garage remote?
 
-**Guest side.** The details *are* sent — in an email or a check-in document. At
-the door that means scrolling a PDF for one code. There, but not usable.
+**Guest side.** The details are sent, in an email or a check-in doc. At the door
+that means scrolling a PDF for one code. There, but not very handy.
 
-**Company side.** About 25 facts per property, and every one differs — lock,
+**Company side.** About 25 facts per property, and every one differs, lock,
 garage, building entry. Across thousands of units, collecting and updating that
 is the real cost.
 
 This prototype covers both ends:
 
 ```
-Address ──▶ web enrichment ──▶ what's still missing ──▶ AI voice call to
-                                                        the property contact
-                                                              │
-        property record ◀── auto-publish ◀── LLM extraction ◀─┘
+Address ──▶ look up what's public ──▶ what's still missing ──▶ AI call to
+                                                          the property contact
+                                                                  │
+        property record ◀── saved ◀── pulled from the transcript ◀─┘
                 │
                 └──▶ guest asks "where's the garage remote?"
 ```
 
-Public facts (address, beds/baths, amenities, general parking) are researched
-automatically. The rest — the check-in details only the property manager knows —
-are gathered by an AI agent that places a real phone call and has a natural
-conversation, then extracts the structured fields from the transcript. The agent
-is briefed only on the fields still missing, so calls stay short and never feel
-like a questionnaire.
+Public facts get looked up automatically. The rest, the check-in details only
+the property manager knows, are gathered by an AI agent that makes a real phone
+call and has a normal conversation, then pulls the answers out of the
+transcript. The agent is told only about the fields still missing, so calls stay
+short and never feel like a form.
 
 ## Stack
 

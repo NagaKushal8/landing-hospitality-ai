@@ -69,10 +69,10 @@ export default function Replay({ replay, reason }) {
       <div className={`banner ${isSample ? 'warn' : ''}`}>
         <b>{isSample ? 'Example call' : 'Recording of a real call'}</b>
         {isSample
-          ? ' — an illustration of how the conversation goes. No live call was placed.'
+          ? '. This shows how the conversation goes. No live call was placed.'
           : replay?.recordedAt
-            ? ` — placed ${new Date(replay.recordedAt).toLocaleString()}. Played back, not live.`
-            : ' — played back, not live.'}
+            ? `, placed ${new Date(replay.recordedAt).toLocaleString()}. Played back, not live.`
+            : '. Played back, not live.'}
         {reason && <div className="replay-why">{reason}</div>}
       </div>
 
