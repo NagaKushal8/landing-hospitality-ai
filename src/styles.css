@@ -335,3 +335,46 @@ body {
 .scope-n { font-size: 19px; font-weight: 700; color: var(--accent); margin-right: 7px; }
 .scope-label { font-size: 13.5px; font-weight: 600; color: var(--text); }
 .scope-why { display: block; font-size: 11.5px; margin-top: 3px; }
+
+/* ---- Anything a person typed reads green ------------------------------- */
+/*
+   Green is the human channel throughout: what an operator typed into a form,
+   what a guest typed into the chat. Everything the system produced — enriched
+   fields, model answers, transcript lines — stays in the default text colour.
+   With three sources of truth on screen at once (web, phone, person), the
+   fastest way to tell them apart should not be reading the labels.
+*/
+.onboard-form input,
+.call-row input,
+.pin-row input,
+.composer input,
+.picker select {
+  color: var(--accent);
+  caret-color: var(--accent);
+  font-weight: 500;
+}
+
+.onboard-form input::placeholder,
+.call-row input::placeholder,
+.pin-row input::placeholder,
+.composer input::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.onboard-form input:focus,
+.call-row input:focus,
+.pin-row input:focus,
+.composer input:focus,
+.picker select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(46, 196, 182, 0.14);
+}
+
+/* The guest's own messages, matching the inputs they were typed into. */
+.bubble.user .bubble-text { color: #8ff0e4; }
+
+/* NOTE: the source pills deliberately keep their own palette. voice is already
+   green, so tinting manual green too would make two provenance sources
+   indistinguishable — which is the one thing those pills exist to do. */
