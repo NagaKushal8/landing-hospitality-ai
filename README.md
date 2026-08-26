@@ -205,6 +205,23 @@ sent today is dead when it gets opened next week.
 
 ### Costs
 
-Vercel Hobby and Supabase free tiers are $0. OpenAI runs a few cents per
-enrichment. Vapi is the only meaningful cost at roughly $0.25–0.50 per
-five-minute call.
+Vercel Hobby, Supabase free tier, and the concierge itself are effectively $0 —
+OpenAI runs a few cents per enrichment and a fraction of a cent per answer.
+
+Voice is the only real cost, and it is per-minute pass-through rather than a
+single line item:
+
+| Component | Per minute | Per 5-min call |
+|---|---|---|
+| Vapi platform fee | $0.050 | $0.25 |
+| LLM (gpt-4o, in-call) | ~$0.030–0.050 | ~$0.15–0.25 |
+| TTS (voice) | ~$0.010–0.030 | ~$0.05–0.15 |
+| Telephony (Twilio, US) | $0.014 | $0.07 |
+| STT (Deepgram) | ~$0.004 | ~$0.02 |
+| **All-in** | **~$0.11–0.15** | **~$0.55–0.75** |
+
+Plus $1.15/month for the Twilio number itself.
+
+So a rehearsal plus a live demo is comfortably under $5, and Vapi's $10 signup
+credit covers it. `VAPI_MODEL=gpt-4o-mini` is the biggest single lever if you
+are iterating on the prompt across many calls.
