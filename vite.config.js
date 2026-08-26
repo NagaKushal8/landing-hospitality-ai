@@ -44,7 +44,7 @@ function apiDevServer() {
       server.config.logger.info(
         `  api  openai:${has('OPENAI_API_KEY')} ` +
           `supabase:${process.env.SUPABASE_URL && (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY) ? 'yes' : 'NO'} ` +
-          `vapi:${has('VAPI_API_KEY')}`
+          `bland:${has('BLAND_API_KEY')}`
       )
 
       // Static routes must win over /api/homes/[id], so match them first.
