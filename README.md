@@ -78,15 +78,29 @@ The property store. Free tier, about five minutes.
    [`supabase/schema.sql`](supabase/schema.sql) -> Run. It is idempotent, so
    re-running it is safe.
 
-3. **Get the credentials.** Settings -> API Keys:
-   - **Project URL** -> `SUPABASE_URL`
-   - the **secret** key -> `SUPABASE_SERVICE_ROLE_KEY`
+3. **Get the credentials.** Two different pages, and the menus have moved
+   recently — if a path below does not match what you see, the fallback is noted.
 
-   New projects show `sb_secret_...`; older ones show a `service_role` JWT
-   starting `eyJ...`. Either works. What matters is that you take the **secret**
-   key and not the publishable/anon one — RLS is enabled with no policies, so the
-   publishable key can read nothing and every request would come back empty
-   rather than erroring in a way that points at the cause.
+   **Project URL** -> `SUPABASE_URL`
+   - **Settings -> Data API**, field *Project URL*. On some accounts this lives
+     under **Integrations -> Data API** instead.
+   - If you cannot find it, read it off the address bar. Inside a project the URL
+     is `supabase.com/dashboard/project/<ref>`, and your value is
+     `https://<ref>.supabase.co`. That never changes with the UI.
+
+   **Secret key** -> `SUPABASE_SECRET_KEY`
+   - **Settings -> API Keys**, the **"Publishable and secret API keys"** tab,
+     **Secret keys** section. Take the one starting `sb_secret_...`.
+   - Secret keys are hidden until you click **Reveal** on the row. Each reveal is
+     recorded in the org Audit Log — expected, not a warning.
+   - If the section is empty, click **Create new API keys**.
+   - Ignore the **Legacy API Keys** tab. On a project created after November 2025
+     it is empty — that is where `anon` / `service_role` used to live. If you do
+     have a legacy project, its `service_role` JWT (`eyJ...`) still works here.
+
+   Take the **secret** key, not the publishable one. RLS is enabled with no
+   policies, so a publishable key reads nothing and every request comes back
+   empty rather than failing somewhere that points at the cause.
 
    This key bypasses RLS entirely. It is read only by the serverless functions,
    is never `VITE_` prefixed, and must never reach the browser.
