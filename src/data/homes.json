@@ -1,0 +1,263 @@
+[
+  {
+    "id": "AUS-4B",
+    "doorNumber": "4B",
+    "propertyName": "The Foundry Lofts — Unit 4B",
+    "address": "1400 E 6th St, Austin, TX 78702",
+    "market": "Austin",
+    "neighborhood": "East Austin",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 720,
+    "floor": 4,
+    "buildingEntrance": {
+      "method": "Keypad at glass front door on E 6th St",
+      "code": "8842",
+      "notes": "Code is active 24/7 for the length of your stay. Pull the door firmly after the beep."
+    },
+    "unitDoor": {
+      "method": "Smart lock (Schlage) — code entry",
+      "code": "1195",
+      "notes": "Enter code then press the Schlage logo. Hold the handle down for 3 seconds to unlatch."
+    },
+    "lateCheckIn": "Self check-in available any time. If you arrive after 11:00 PM and the code fails, the building's after-hours line is 512-555-0164 (rings the on-call concierge).",
+    "parking": {
+      "type": "Gated garage, 1 assigned spot (#4B)",
+      "garageAccess": "Same keypad code 8842 opens the garage gate. Clicker in the kitchen drawer as backup.",
+      "evCharging": "No EV charger on-site. Nearest is the Whole Foods garage 0.4 mi away."
+    },
+    "pool": null,
+    "gym": "Small fitness room on the 2nd floor, open 5 AM–11 PM, same building code.",
+    "wifi": { "network": "Foundry-4B", "password": "riverside-720" },
+    "hotWater": "Tankless heater in the utility closet — always on, no pilot to light. If water runs cold, reset the breaker labeled 'WH' in the panel by the front door.",
+    "heatingCooling": "Nest thermostat on the living room wall. Please keep between 65–78°F.",
+    "trash": "Trash chute at the end of the 4th-floor hallway. Recycling bins are in the garage by spot #1. Trash pickup is Tuesday and Friday.",
+    "pets": "Cats and dogs welcome, 2 pets max, no weight limit. No pet deposit for stays under 6 months.",
+    "laundry": "In-unit stacked washer/dryer in the hall closet. Pods are under the sink.",
+    "mailPackages": "Package room on the ground floor, opens with building code 8842. Mailbox #4B key is on the kitchen hook.",
+    "quietHours": "10 PM – 7 AM, per building rules.",
+    "checkoutInstructions": "Load and start the dishwasher, take trash to the chute, leave keys/clicker where you found them, close and lock the unit door behind you.",
+    "ownerContact": { "name": "Property team (East Austin)", "phone": "512-555-0164" },
+    "emergencyContact": "For gas smell or water leak call 512-555-0164 immediately, then 911 if urgent.",
+    "amenities": ["rooftop deck", "bike storage", "package room", "elevator"]
+  },
+  {
+    "id": "AUS-12A",
+    "doorNumber": "12A",
+    "propertyName": "Skyline Tower — Unit 12A",
+    "address": "300 Bowie St, Austin, TX 78703",
+    "market": "Austin",
+    "neighborhood": "Downtown",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "sqft": 1140,
+    "floor": 12,
+    "buildingEntrance": {
+      "method": "Front desk with 24/7 attendant + fob for after-hours",
+      "code": null,
+      "notes": "During the day the attendant will buzz you in. After 9 PM use the fob on the reader to the right of the door."
+    },
+    "unitDoor": {
+      "method": "RFID fob (same fob as building)",
+      "code": null,
+      "notes": "Tap the fob on the black pad. There is no keypad on this unit — the fob is the only way in, so don't lose it."
+    },
+    "lateCheckIn": "Fob is left in a lockbox on the parking level (lockbox code 5567). If you arrive after midnight and the lockbox is empty, call the front desk line 512-555-0199.",
+    "parking": {
+      "type": "Valet only",
+      "garageAccess": "Pull up to the Bowie St entrance and the valet will park for you. Valet runs 6 AM–midnight; after midnight, self-park in any visitor spot on P2 and give keys to valet in the morning.",
+      "evCharging": "Two Tesla chargers on P1, first-come. Ask valet to plug in."
+    },
+    "pool": {
+      "access": "Rooftop pool on the 20th floor, same fob. Open 6 AM–10 PM.",
+      "notes": "Towels are at the pool bar on weekends only; bring your own midweek."
+    },
+    "gym": "Full gym on the 3rd floor, 24/7, same fob.",
+    "wifi": { "network": "SkylineResident", "password": "downtown-12A-guest" },
+    "hotWater": "Central building hot water — instant, nothing to adjust.",
+    "heatingCooling": "Wall-mounted touchscreen by the kitchen. Building switches between heat and AC seasonally; if it won't blow cold in winter that's why — call the desk.",
+    "trash": "Trash and recycling chutes in the service hallway (turn left out of the unit). Compost is not collected in this building.",
+    "pets": "No pets in this unit (owner restriction). Service animals only.",
+    "laundry": "In-unit full-size washer/dryer off the kitchen.",
+    "mailPackages": "Front desk signs for all packages and will text you when one arrives.",
+    "quietHours": "11 PM – 8 AM.",
+    "checkoutInstructions": "Return the fob to the front desk (not the lockbox). Leave valet ticket on the counter. Text the property team your departure time.",
+    "ownerContact": { "name": "Property team (Downtown ATX)", "phone": "512-555-0199" },
+    "emergencyContact": "Front desk 512-555-0199 is staffed 24/7 for any emergency.",
+    "amenities": ["rooftop pool", "24/7 gym", "valet", "concierge", "conference room"]
+  },
+  {
+    "id": "DAL-7A",
+    "doorNumber": "7A",
+    "propertyName": "Bishop Arts Bungalow — Unit 7A",
+    "address": "412 N Bishop Ave, Dallas, TX 75208",
+    "market": "Dallas",
+    "neighborhood": "Bishop Arts",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 640,
+    "floor": 1,
+    "buildingEntrance": {
+      "method": "No building entrance — private ground-floor unit with its own street door",
+      "code": null,
+      "notes": "Walk up the front path; your door is the green one on the left."
+    },
+    "unitDoor": {
+      "method": "Physical key in a lockbox",
+      "code": "3390",
+      "notes": "Lockbox is mounted on the gas meter to the right of the door. Enter 3390, slide the cover down, take the key. Please return the key to the lockbox at checkout."
+    },
+    "lateCheckIn": "Lockbox works any hour, so late arrival is no problem. There is no on-site staff; for issues call the property team at 214-555-0143.",
+    "parking": {
+      "type": "Street parking only",
+      "garageAccess": "No garage. Free unmetered street parking on N Bishop and the side streets. Do not park in the numbered spots behind the building — those belong to the restaurant next door and they will tow.",
+      "evCharging": "No on-site charging."
+    },
+    "pool": null,
+    "gym": "No gym on-site. There's a StudioFit day-pass gym two blocks north.",
+    "wifi": { "network": "BishopBungalow", "password": "greendoor640" },
+    "hotWater": "Standard tank water heater in the hall closet. If you run out during a long shower, it refills in about 30 minutes.",
+    "heatingCooling": "Older wall unit — dial thermostat by the front door. Turn clockwise for heat, counter-clockwise for cool. It's loud; that's normal.",
+    "trash": "Two bins behind the back gate: black for trash, blue for recycling. Roll them to the curb Wednesday night; the city collects Thursday morning. Bring them back after.",
+    "pets": "One dog under 40 lbs allowed with a $250 refundable pet deposit. No cats (owner is allergic and stores items here between guests).",
+    "laundry": "No in-unit laundry. Coin laundromat 'Wash Day' is 0.3 mi away on Davis St.",
+    "mailPackages": "Packages are left on the covered porch. There's a camera doorbell; you'll get a notification if something is dropped.",
+    "quietHours": "This is a residential street — please keep noise down after 9 PM out of courtesy to neighbors.",
+    "checkoutInstructions": "Return key to lockbox, scramble the code, take trash bins to the curb if it's Wednesday, turn the wall unit to 'off'.",
+    "ownerContact": { "name": "Property team (Dallas)", "phone": "214-555-0143" },
+    "emergencyContact": "Property team 214-555-0143. For gas smell leave immediately and call Atmos Energy + 911.",
+    "amenities": ["private entrance", "backyard patio", "camera doorbell"]
+  },
+  {
+    "id": "NSH-3C",
+    "doorNumber": "3C",
+    "propertyName": "The Gulch Residences — Unit 3C",
+    "address": "800 12th Ave S, Nashville, TN 37203",
+    "market": "Nashville",
+    "neighborhood": "The Gulch",
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "sqft": 1050,
+    "floor": 3,
+    "buildingEntrance": {
+      "method": "App-based smart entry (Latch) + keypad backup",
+      "code": "6621",
+      "notes": "You'll get a Latch app invite by email; the app unlocks the lobby by Bluetooth. If the app fails, keypad code 6621 works on the same reader."
+    },
+    "unitDoor": {
+      "method": "Latch smart lock (app or code)",
+      "code": "4408",
+      "notes": "Same Latch app opens the unit, or tap in 4408 + the checkmark."
+    },
+    "lateCheckIn": "Fully self-service 24/7 via app or code. No lockbox needed. After-hours issues: 615-555-0177.",
+    "parking": {
+      "type": "Gated garage, 1 assigned spot (level P2, #3C)",
+      "garageAccess": "The Latch app opens the garage gate too. Backup: keypad 6621 on the pedestal at the gate.",
+      "evCharging": "ChargePoint stations on P1, $0.20/kWh billed to the ChargePoint app."
+    },
+    "pool": {
+      "access": "Courtyard saltwater pool on the 4th-floor deck, Latch app or code 6621. Open 7 AM–9 PM, closed for the season Nov 1–Mar 15.",
+      "notes": "Glass containers not allowed on the pool deck."
+    },
+    "gym": "24/7 gym on the ground floor with Peloton bikes, Latch access.",
+    "wifi": { "network": "Gulch-3C", "password": "musiccity-1050" },
+    "hotWater": "Tankless, instant. No adjustment needed.",
+    "heatingCooling": "Two Ecobee thermostats (one per bedroom zone). Please don't set below 68°F in summer to avoid the coils freezing.",
+    "trash": "Valet trash: leave your tied bag outside the unit door between 6–8 PM Sunday through Thursday and it's collected. Recycling goes to the chute room down the hall anytime.",
+    "pets": "Cats and dogs welcome, 2 max, 75 lb limit each. Dog relief area is the grassy strip on the south side of the building.",
+    "laundry": "In-unit washer/dryer in the primary bathroom hall.",
+    "mailPackages": "Amazon Hub lockers in the lobby; you'll get a code by text when a package lands.",
+    "quietHours": "10 PM – 7 AM.",
+    "checkoutInstructions": "Put out any final trash bag if it's before 8 PM, run the dishwasher, leave the Ecobees at 72°F, close the door (it auto-locks).",
+    "ownerContact": { "name": "Property team (Nashville)", "phone": "615-555-0177" },
+    "emergencyContact": "615-555-0177, 24/7 on-call.",
+    "amenities": ["saltwater pool", "24/7 gym", "valet trash", "package lockers", "rooftop lounge"]
+  },
+  {
+    "id": "PHX-9D",
+    "doorNumber": "9D",
+    "propertyName": "Camelback Vista — Unit 9D",
+    "address": "5000 N 44th St, Phoenix, AZ 85018",
+    "market": "Phoenix",
+    "neighborhood": "Arcadia",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "sqft": 1480,
+    "floor": 9,
+    "buildingEntrance": {
+      "method": "Keypad at both the north and south lobby doors",
+      "code": "7714",
+      "notes": "Either lobby door takes the same code. The south door is closest to guest parking."
+    },
+    "unitDoor": {
+      "method": "Smart lock (Yale) — code or app",
+      "code": "2260",
+      "notes": "Yale keypad: tap the screen to wake it, enter 2260, it unlocks with a click."
+    },
+    "lateCheckIn": "Self check-in 24/7. Note the pool and gym close at 10 PM even though unit access is anytime. Issues after hours: 602-555-0121.",
+    "parking": {
+      "type": "Open garage, 2 assigned spots (#9D-1 and #9D-2)",
+      "garageAccess": "Garage is open-air, no gate — just drive in. Your two spots are on level 2, painted with the unit number.",
+      "evCharging": "Four Tesla + two J1772 chargers on level 1, free for residents."
+    },
+    "pool": {
+      "access": "Resort-style pool + hot tub in the central courtyard, keypad 7714. Open 6 AM–10 PM year-round (it's Phoenix).",
+      "notes": "Poolside cabanas can be reserved via the property team at no charge."
+    },
+    "gym": "Air-conditioned gym on level 1, 5 AM–10 PM, keypad 7714.",
+    "wifi": { "network": "CamelbackVista-9D", "password": "arcadia-desert-1480" },
+    "hotWater": "Tank heater in the laundry room; plenty for a 3-bed. Recovers fast.",
+    "heatingCooling": "Honeywell thermostat in the hallway. In summer the AC works hard — please keep doors and windows closed. Filter was changed before your stay.",
+    "trash": "Three chute rooms (one per wing) — you're in the east wing, chute is by the elevator. Recycling dumpster is in the garage on level 1. Bulk items: text the property team, don't leave them by the chute.",
+    "pets": "Cats and dogs welcome, 3 max (it's a big unit), 100 lb combined weight. Fenced dog park on the north lawn.",
+    "laundry": "In-unit full-size washer/dryer in a dedicated laundry room.",
+    "mailPackages": "Parcel Pending lockers by the south lobby; code texted on delivery.",
+    "quietHours": "10 PM – 6 AM.",
+    "checkoutInstructions": "Set thermostat to 80°F (not off — the unit can overheat closed up in summer), take trash to the east chute, start the dishwasher, lock up.",
+    "ownerContact": { "name": "Property team (Phoenix)", "phone": "602-555-0121" },
+    "emergencyContact": "602-555-0121, 24/7. AC emergencies in summer are treated as urgent.",
+    "amenities": ["resort pool", "hot tub", "EV charging", "dog park", "cabanas"]
+  },
+  {
+    "id": "DEN-5F",
+    "doorNumber": "5F",
+    "propertyName": "RiNo Art Flats — Unit 5F",
+    "address": "2900 Larimer St, Denver, CO 80205",
+    "market": "Denver",
+    "neighborhood": "RiNo",
+    "bedrooms": 1,
+    "bathrooms": 1,
+    "sqft": 690,
+    "floor": 5,
+    "buildingEntrance": {
+      "method": "Keypad + intercom at the Larimer St door",
+      "code": "9903",
+      "notes": "Keypad 9903 on the silver panel. The intercom is only for visitors buzzing up."
+    },
+    "unitDoor": {
+      "method": "Smart lock (August) — code or app",
+      "code": "5541",
+      "notes": "August lock: touch the ring to wake, enter 5541. It auto-relocks after 30 seconds."
+    },
+    "lateCheckIn": "Self check-in 24/7. Heads-up: in winter the Larimer St door can freeze — push hard or use the covered garage entrance (same code). After-hours: 720-555-0188.",
+    "parking": {
+      "type": "Gated garage, 1 assigned spot (#5F), tandem-shared with unit 5E",
+      "garageAccess": "Keypad 9903 opens the garage roll-gate. Your spot is tandem with 5E — coordinate so nobody's blocked; 5E is usually gone by 8 AM. A parking clicker is in the entry bowl.",
+      "evCharging": "One shared J1772 charger by the elevator; free but often in use."
+    },
+    "pool": null,
+    "gym": "No gym, but there's a heated bike/ski storage room (code 9903) — popular in winter.",
+    "wifi": { "network": "RiNoArtFlats-5F", "password": "milehigh-690" },
+    "hotWater": "Tankless; instant hot water. In a hard freeze, let a faucet drip overnight to avoid frozen pipes (the property team will text a reminder on cold nights).",
+    "heatingCooling": "Radiant floor heat controlled by a dial in the hallway; no central AC (Denver summers are dry — there's a portable AC unit in the closet and a box fan).",
+    "trash": "Trash and single-stream recycling chutes in the 5th-floor utility room. Compost drop is in the garage (Denver requires it) — green bin by the gate.",
+    "pets": "Cats and dogs welcome, 2 max, 60 lb limit. Larimer St is busy — use the quieter side street for walks.",
+    "laundry": "In-unit stacked washer/dryer in the bathroom.",
+    "mailPackages": "Luxer One lockers in the lobby; text code on delivery. Oversized items are left with the front-desk tablet concierge (staffed 9 AM–6 PM).",
+    "quietHours": "10 PM – 7 AM.",
+    "checkoutInstructions": "In winter, leave the heat at 62°F (don't turn it off — frozen pipes). Take trash/compost down, return the parking clicker to the bowl, pull the door shut (auto-locks).",
+    "ownerContact": { "name": "Property team (Denver)", "phone": "720-555-0188" },
+    "emergencyContact": "720-555-0188, 24/7. Burst/frozen pipe is an urgent call.",
+    "amenities": ["bike/ski storage", "rooftop deck", "package lockers", "art gallery lobby"]
+  }
+]

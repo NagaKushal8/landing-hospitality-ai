@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+*.local
+
+# local scratch
+htr.txt
+
+# secrets — never commit
+.env
+.env.*
+!.env.example
+
+# vercel
+.vercel
