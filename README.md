@@ -186,20 +186,37 @@ charged even when a call fails.
 
 ## Deploying
 
-The repo is a Vite SPA plus Vercel serverless functions in `/api`, so Vercel
-needs no configuration beyond the environment variables.
+Import the repo at [vercel.com/new](https://vercel.com/new). Framework preset
+**Vite** is detected; no build settings need changing.
 
-1. Import the repo at [vercel.com/new](https://vercel.com/new). Framework
-   preset **Vite** is detected automatically.
-2. Add the variables from `.env.example` under Settings → Environment Variables.
-   None of them are `VITE_` prefixed, so none reach the browser.
-3. Run `supabase/schema.sql` in the Supabase SQL editor, then `npm run seed`
-   locally to load the six demo properties.
+Set these under Settings -> Environment Variables. None are `VITE_` prefixed,
+so none reach the browser.
 
-`vercel.json` gives the onboarding routes a 60s ceiling (web research is slow)
-and registers a daily cron against `/api/health`, which keeps the free-tier
-Supabase project from pausing after a week of inactivity — otherwise a link
-sent today is dead when it gets opened next week.
+| Variable | |
+|---|---|
+| `OPENAI_API_KEY` | concierge answers, enrichment, extraction |
+| `OPENAI_MODEL` | |
+| `SUPABASE_URL` | bare project URL, not the REST endpoint |
+| `SUPABASE_SECRET_KEY` | the `sb_secret_...` one |
+| `BLAND_API_KEY` | outbound calls |
+| `BLAND_VOICE` | voice id from Bland's library |
+| `CALL_MAX_MINUTES` | per-call length cap |
+| `DEMO_BUDGET_USD` | total spend ceiling; nothing bypasses it |
+| `DEMO_DAILY_CALL_LIMIT` | calls per day before the PIN |
+| `DEMO_PIN` | unlocks calls past the daily limit |
+| `DEMO_CALL_ESTIMATE_USD` | reserved per call, reconciled after |
+| `DEMO_REPLAY_CALL_ID` | the call replayed when one cannot be placed |
+| `MOCK_ENRICH` | `0` in production |
+
+`vercel.json` gives the onboarding routes a 60s ceiling because web research is
+slow, and registers a daily cron against `/api/health` so the free-tier Supabase
+project never pauses — without it a link sent today is dead when it is opened
+next week.
+
+After the first deploy, open `/api/health`. It should report every service
+configured and `readOnly: false`. If Supabase is missing the app still serves
+the bundled seed properties read-only, and onboarding refuses rather than
+silently dropping writes.
 
 ### Costs
 
