@@ -43,8 +43,9 @@ function explainVapiError(status, text) {
   if (low.includes('daily outbound call limit')) {
     return (
       'Vapi will not place the call: free Vapi numbers have a daily outbound limit and this one has hit it. ' +
-      'Either wait for it to reset (24h), or import a Twilio number in the Vapi dashboard ' +
-      '(Phone Numbers -> Import) and put its id in VAPI_PHONE_NUMBER_ID — imported numbers have no such cap.'
+      'Cheapest fix is to add a payment method in Vapi — that is pay-as-you-go with no monthly fee, and the cap ' +
+      'appears to be a gate on card-less accounts. Failing that, import a Twilio number (Phone Numbers -> Import, ' +
+      '$1.15/mo, definitively uncapped) and put its id in VAPI_PHONE_NUMBER_ID. Do not buy the Team plan; it will not help.'
     )
   }
   if (low.includes('insufficient') || low.includes('credit') || low.includes('balance')) {
