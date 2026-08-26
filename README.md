@@ -65,6 +65,52 @@ deliberate demo tradeoff, not a recommendation: a misheard door code reaches a
 guest with nothing in between. A review queue for `critical` fields is the first
 thing to add before this touches a real guest.
 
+## Setting up Supabase
+
+The property store. Free tier, about five minutes.
+
+1. **Create a project** at [supabase.com](https://supabase.com) (signing in with
+   GitHub is quickest). Pick a region near your Vercel one. Provisioning takes a
+   minute or two. The database password it asks you to set is not used by this
+   app — it connects with an API key — but save it anyway.
+
+2. **Create the tables.** SQL Editor -> New query -> paste the whole of
+   [`supabase/schema.sql`](supabase/schema.sql) -> Run. It is idempotent, so
+   re-running it is safe.
+
+3. **Get the credentials.** Settings -> API Keys:
+   - **Project URL** -> `SUPABASE_URL`
+   - the **secret** key -> `SUPABASE_SERVICE_ROLE_KEY`
+
+   New projects show `sb_secret_...`; older ones show a `service_role` JWT
+   starting `eyJ...`. Either works. What matters is that you take the **secret**
+   key and not the publishable/anon one — RLS is enabled with no policies, so the
+   publishable key can read nothing and every request would come back empty
+   rather than erroring in a way that points at the cause.
+
+   This key bypasses RLS entirely. It is read only by the serverless functions,
+   is never `VITE_` prefixed, and must never reach the browser.
+
+4. **Load the demo properties.** With `.env.local` filled in:
+
+   ```bash
+   npm run seed
+   ```
+
+   Upserts the six seed homes by id, so it is safe to re-run and will not
+   clobber anything created through onboarding.
+
+5. **Check it took.** `curl localhost:5173/api/health` should report
+   `"supabase":"configured"`, `readOnly:false`, and `properties:6`. Until then
+   the app still runs — it serves the bundled seed data read-only — but
+   onboarding returns a 503 rather than silently dropping writes.
+
+**One thing that will bite you later:** free-tier projects pause after about a
+week with no queries, and a paused project means the link you sent the co-founder
+is dead when they open it. `vercel.json` registers a daily cron against
+`/api/health` to keep it warm — that only runs once deployed, so if you leave the
+project idle before then, wake it from the dashboard.
+
 ## Setting up Vapi
 
 The voice agent is the only part that costs real money and the only part that
