@@ -7,6 +7,7 @@
 import { config } from 'dotenv'
 import { readFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
+import { normalizeProjectUrl } from '../api/_lib/supabase.js'
 
 // `dotenv/config` would only read `.env`, but real values live in `.env.local`
 // (that is the gitignored one). Load both, local winning, so this matches where
@@ -14,17 +15,18 @@ import { createClient } from '@supabase/supabase-js'
 config({ path: '.env' })
 config({ path: '.env.local', override: true })
 
-const URL = process.env.SUPABASE_URL
+// Not named URL: that would shadow the global URL constructor used below.
+const PROJECT_URL = normalizeProjectUrl(process.env.SUPABASE_URL)
 const KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 
-if (!URL || !KEY) {
+if (!PROJECT_URL || !KEY) {
   console.error('Missing SUPABASE_URL / SUPABASE_SECRET_KEY.')
   console.error('Copy .env.example to .env.local and fill them in.')
   process.exit(1)
 }
 
 const homes = JSON.parse(readFileSync(new URL('../src/data/homes.json', import.meta.url), 'utf8'))
-const supabase = createClient(URL, KEY, { auth: { persistSession: false } })
+const supabase = createClient(PROJECT_URL, KEY, { auth: { persistSession: false } })
 
 // Everything in the seed file was hand-authored, so it all carries the same
 // provenance. Onboarded properties get 'web' and 'voice' stamps instead.

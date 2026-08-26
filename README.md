@@ -87,6 +87,11 @@ The property store. Free tier, about five minutes.
    - If you cannot find it, read it off the address bar. Inside a project the URL
      is `supabase.com/dashboard/project/<ref>`, and your value is
      `https://<ref>.supabase.co`. That never changes with the UI.
+   - **Take the bare project URL, not the REST endpoint.** That page shows
+     `https://<ref>.supabase.co/rest/v1/` right beside it; supabase-js appends
+     `/rest/v1` itself, so pasting that one produces a doubled path and the
+     unhelpful error `Invalid path specified in request URL`. The code strips a
+     trailing `/rest/v1` defensively, but it is worth knowing which is which.
 
    **Secret key** -> `SUPABASE_SECRET_KEY`
    - **Settings -> API Keys**, the **"Publishable and secret API keys"** tab,
