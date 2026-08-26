@@ -10,7 +10,8 @@
     "seed": "node scripts/seed.js",
     "dev:ui": "vite",
     "start": "vercel dev",
-    "vapi:check": "node scripts/vapi-check.js"
+    "vapi:check": "node scripts/vapi-check.js",
+    "call:prompt": "node scripts/call-prompt.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

@@ -13,3 +13,6 @@ htr.txt
 
 # vercel
 .vercel
+
+# generated test artifact
+bland-test-prompt.txt
