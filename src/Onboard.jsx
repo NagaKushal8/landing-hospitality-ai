@@ -183,11 +183,15 @@ export default function Onboard({ onOpenHelp }) {
   const criticalGaps = gaps.filter((g) => g.critical)
 
   // Research quality tracks address quality closely. "90 fisher ave" made the
-  // model guess a city and it found five fields; the same address with city and
-  // state would have found more, and every field it misses becomes a question
-  // the property manager has to answer on the phone.
+  // model guess a city and it found five fields; the same address with a city and
+  // state found ten. Every field the research misses becomes a question someone
+  // has to answer on the phone.
+  //
+  // A comma is the test, rather than looking for a postcode: street numbers are
+  // often five digits themselves ("10319 venetia real ave"), so a postcode check
+  // reads those as complete when they are not.
   const addressLooksThin =
-    form.address.trim().length > 0 && !/,/.test(form.address) && !/\d{5}/.test(form.address)
+    form.address.trim().length > 0 && !form.address.includes(',')
 
   return (
     <div className="screen onboard">
