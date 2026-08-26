@@ -11,7 +11,7 @@
 // no tunnel, and on serverless it avoids holding a function open for the
 // length of a phone call.
 
-import { computeGaps, filledSummary } from '../../shared/field-registry.js'
+import { computeGaps, knownFacts } from '../../shared/field-registry.js'
 
 const BASE = 'https://api.bland.ai/v1'
 
@@ -84,7 +84,7 @@ function explainError(status, text) {
 // ---- The brief -------------------------------------------------------------
 
 export function buildSystemPrompt(home, gaps) {
-  const known = filledSummary(home)
+  const known = knownFacts(home)
 
   // Critical fields first. A brief can easily run longer than the five minutes
   // we promised, and if the contact cuts it short we want the door codes
@@ -103,8 +103,9 @@ ${home.address || ''}
 WHAT YOU NEED TO LEARN
 ${topics.join('\n')}
 
-WHAT YOU ALREADY KNOW — never ask about these, you would be wasting their time:
-${known.length ? known.join(', ') : '(nothing yet)'}
+WHAT YOU ALREADY KNOW — do not ask about any of these, you would be wasting
+their time. Read them: they often answer a later question before you ask it.
+${known.length ? known.map((k) => `- ${k}`).join('\n') : '- (nothing yet)'}
 
 HOW TO TALK
 - This is a conversation, not a form. Do not read the list above out as questions.
@@ -114,6 +115,10 @@ HOW TO TALK
 - The list may be longer than the time you have. Cover everything marked PRIORITY
   first — those are the ones that leave a guest locked out if nobody knows them.
   Anything else is a bonus.
+- Reason from what you already know before asking. If parking is street-only,
+  there is no garage remote to ask about — confirm in passing rather than asking
+  a question the listing already answered. Asking about something the record
+  contradicts makes it obvious you did not read it.
 - If they volunteer several details at once, take all of them and do NOT re-ask.
 - Ask one thing at a time and actually listen to the answer before moving on.
 - For any code, number, or address, repeat it back once to confirm you heard it right.

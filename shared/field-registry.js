@@ -248,6 +248,26 @@ export function filledSummary(home) {
   )
 }
 
+// Known fields WITH their values, for briefing the call agent.
+//
+// Field names alone are not enough. Told only that "Parking (Type)" is known,
+// an agent still asks how the garage opens and where the remote is kept — and
+// the contact has to explain there is no garage, which is a wasted turn on a
+// five-minute call and makes the agent sound like it did no homework. Told
+// "Parking — Type: Off-street parking", it can reason instead.
+//
+// Values are truncated because enrichment can return a paragraph about four
+// swimming pools, and the brief has a budget.
+export function knownFacts(home, { maxChars = 140 } = {}) {
+  return FIELDS.filter((f) => !isEmpty(getByPath(home, f.key))).map((f) => {
+    const raw = getByPath(home, f.key)
+    const text = Array.isArray(raw) ? raw.join(', ') : String(raw)
+    const value = text.length > maxChars ? `${text.slice(0, maxChars - 1).trimEnd()}…` : text
+    const label = f.section === f.label ? f.section : `${f.section} — ${f.label}`
+    return `${label}: ${value}`
+  })
+}
+
 // ---- Context ---------------------------------------------------------------
 
 // Flatten a property into the labeled block the model gets as ground truth.

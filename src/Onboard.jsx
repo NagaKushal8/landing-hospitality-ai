@@ -182,6 +182,13 @@ export default function Onboard({ onOpenHelp }) {
 
   const criticalGaps = gaps.filter((g) => g.critical)
 
+  // Research quality tracks address quality closely. "90 fisher ave" made the
+  // model guess a city and it found five fields; the same address with city and
+  // state would have found more, and every field it misses becomes a question
+  // the property manager has to answer on the phone.
+  const addressLooksThin =
+    form.address.trim().length > 0 && !/,/.test(form.address) && !/\d{5}/.test(form.address)
+
   return (
     <div className="screen onboard">
       <div className="screen-intro">
@@ -221,6 +228,12 @@ export default function Onboard({ onOpenHelp }) {
               <input value={form.ownerPhone} onChange={set('ownerPhone')} placeholder="512-555-0164" />
             </label>
           </div>
+          {addressLooksThin && (
+            <p className="hint warn-hint">
+              Add the city and state — <b>“90 Fisher Ave, Boston, MA”</b> rather than “90 fisher ave”.
+              Every field the research misses becomes a question someone has to answer on the phone.
+            </p>
+          )}
           <button type="submit" disabled={enriching || !form.address.trim()}>
             {enriching ? 'Researching the web…' : 'Find public info'}
           </button>
