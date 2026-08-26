@@ -1,20 +1,16 @@
 # Landing — Improving the check-in experience
 
-Corporate housing breaks at check-in. A guest lands at 11pm outside a building
-they have never seen: which door, is there a code or a fob or a lockbox, where
-does the garage remote live, what is the Wi-Fi. Every property answers
-differently — a keypad here, a Schlage lock there, a key under a plant beside
-the main door. There is no template, and there are thousands of units.
+A guest reaches a building at 11pm. Which door? Is there a code, a fob, a
+lockbox? Where is the garage remote?
 
-That one problem has two halves.
+**Guest side.** The details *are* sent — in an email or a check-in document. At
+the door that means scrolling a PDF for one code. There, but not usable.
 
-**Getting check-in details to the guest.** Today they call or text someone and
-wait, usually while standing at a door they cannot open.
+**Company side.** About 25 facts per property, and every one differs — lock,
+garage, building entry. Across thousands of units, collecting and updating that
+is the real cost.
 
-**Getting the details in the first place** — the harder half. Roughly 25 facts
-per unit, most of them living only in one busy property manager's head.
-
-This prototype does both:
+This prototype covers both ends:
 
 ```
 Address ──▶ web enrichment ──▶ what's still missing ──▶ AI voice call to
@@ -26,11 +22,11 @@ Address ──▶ web enrichment ──▶ what's still missing ──▶ AI voi
 ```
 
 Public facts (address, beds/baths, amenities, general parking) are researched
-automatically. Whatever is left — the check-in details only the property manager
-knows — is gathered by an AI agent that places a real phone call and has a
-natural conversation, then extracts the structured fields from the transcript.
-The agent is briefed only on the fields still missing, so calls stay short and
-never feel like a questionnaire.
+automatically. The rest — the check-in details only the property manager knows —
+are gathered by an AI agent that places a real phone call and has a natural
+conversation, then extracts the structured fields from the transcript. The agent
+is briefed only on the fields still missing, so calls stay short and never feel
+like a questionnaire.
 
 ## Stack
 

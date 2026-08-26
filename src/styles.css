@@ -463,3 +463,33 @@ body {
 
 /* The brand is a button now (it returns to the intro), so strip button chrome. */
 .brand { background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+
+/* ---- Intro: sides + secondary heading ---------------------------------- */
+/* "How it helps" is a peer of the page title, not a sub-heading, so it uses
+   the same face and weight with room above it. */
+.intro-h1 {
+  margin: 40px 0 18px; font-size: 30px; line-height: 1.2;
+  letter-spacing: -0.01em; color: #fff;
+}
+
+.side-tag {
+  display: inline-block; font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  padding: 3px 9px; border-radius: 20px; margin-bottom: 9px;
+  border: 1px solid var(--line);
+}
+/* Company = the operator collecting details. Guest = the person at the door.
+   Two colours because the whole page is one problem seen from two ends. */
+.side-tag.company { color: var(--accent); border-color: var(--accent-dim); background: rgba(46, 196, 182, 0.07); }
+.side-tag.guest { color: #7fb4e0; border-color: #2d4a63; background: rgba(127, 180, 224, 0.07); }
+
+.problem-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.problem-pair p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+.flow-group + .flow-group { margin-top: 22px; }
+.flow-group .intro-flow { margin-top: 2px; }
+
+@media (max-width: 680px) {
+  .problem-pair { grid-template-columns: 1fr; gap: 20px; }
+  .intro-h1 { font-size: 25px; }
+}
