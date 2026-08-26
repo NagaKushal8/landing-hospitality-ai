@@ -1,37 +1,48 @@
 // Screen 0 — the landing page.
 //
-// Deliberately plain. Whoever opens the link has about thirty seconds of
-// patience and no context, so this says what the problem is, what the thing
-// does, and where to click. No pitch, no metrics, no hero copy.
+// Anchored on check-in, deliberately. That is the moment the operational pain
+// actually shows up, and every other problem here is downstream of it: the
+// concierge exists because check-in details have to reach a guest, and the
+// onboarding pipeline exists because they have to be collected first. Framing
+// this as "property data management" would be true and would lose the reader.
+//
+// Plain on purpose. Whoever opens the link has about thirty seconds and no
+// context. No pitch, no metrics, no hero copy.
 
 export default function Intro({ onGo }) {
   return (
     <div className="screen intro">
       <div className="intro-lede">
-        <h1>Every door is different.</h1>
+        <h1>Check-in is where it breaks.</h1>
         <p>
-          A corporate housing company might run thousands of units. Each one has its own lock, its own
-          code, its own place where the garage remote lives, its own Wi-Fi password. None of it is
-          written down anywhere a guest can reach at 11pm.
+          A guest lands at 11pm outside a building they have never seen. Which door? Is there a code, or
+          a fob, or a lockbox? Where does the garage remote live? What is the Wi-Fi?
+        </p>
+        <p>
+          Every property answers those differently — a keypad here, a Schlage lock there, a key under a
+          plant beside the main door. There is no template, and there are thousands of units.
         </p>
       </div>
 
       <section className="intro-block">
-        <h2>The problem</h2>
-        <p>
-          Two halves, and the second is the hard one.
-        </p>
-        <ul>
+        <h2>One problem, two halves</h2>
+        <ol className="intro-flow">
           <li>
-            <b>Guests can't get answers.</b> They call or text someone, and wait — usually while standing
-            at a door they can't open.
+            <span className="flow-n">A</span>
+            <div>
+              <b>Getting check-in details to the guest.</b> Right now they call or text someone and wait —
+              usually while standing at a door they cannot open. Out of hours, that wait is long.
+            </div>
           </li>
           <li>
-            <b>Nobody wants to collect the data.</b> Getting 25 operational details for one unit means
-            chasing a property manager who is busy and has told someone this already. Multiply by every
-            unit.
+            <span className="flow-n">B</span>
+            <div>
+              <b>Getting the details in the first place.</b> The harder half. Roughly 25 facts per unit —
+              locks, codes, garage, parking, building access, Wi-Fi, thermostat, trash — and most of them
+              live only in one busy property manager's head.
+            </div>
           </li>
-        </ul>
+        </ol>
       </section>
 
       <section className="intro-block">
@@ -40,14 +51,14 @@ export default function Intro({ onGo }) {
           <li>
             <span className="flow-n">1</span>
             <div>
-              <b>Looks up what's public.</b> Give it an address and it researches the building — beds,
+              <b>Looks up what is public.</b> Give it an address and it researches the building — beds,
               baths, amenities, parking — from listing pages.
             </div>
           </li>
           <li>
             <span className="flow-n">2</span>
             <div>
-              <b>Works out what's missing.</b> Nobody publishes a door code. Whatever the web can't
+              <b>Works out what is missing.</b> Nobody publishes a door code. Whatever the web cannot
               answer becomes a short list.
             </div>
           </li>
@@ -55,14 +66,15 @@ export default function Intro({ onGo }) {
             <span className="flow-n">3</span>
             <div>
               <b>Phones the property contact.</b> An AI agent calls, has a normal conversation about
-              exactly those missing things, and writes the answers into the record.
+              exactly those missing things, and writes the answers into the record. It never asks about
+              anything it already found.
             </div>
           </li>
           <li>
             <span className="flow-n">4</span>
             <div>
-              <b>Answers guests from it.</b> "Where's the garage remote?" gets the real answer, for that
-              specific unit.
+              <b>Answers the guest from it.</b> "Where is the garage remote?" gets the real answer for
+              that specific unit, instantly, at 11pm.
             </div>
           </li>
         </ol>
@@ -72,18 +84,20 @@ export default function Intro({ onGo }) {
         <h2>Try it</h2>
         <div className="intro-cards">
           <button className="intro-card" onClick={() => onGo('onboard')}>
-            <b>Onboard</b>
+            <b>Onboard — collecting the details</b>
             <span>
               Put in an address, watch it research, then have the agent call a number you choose. This is
-              the interesting one.
+              the half that does not exist today.
             </span>
           </button>
           <button className="intro-card" onClick={() => onGo('list')}>
-            <b>Doors</b>
-            <span>Six example units and every operational detail behind each, with where it came from.</span>
+            <b>Doors — what a unit knows</b>
+            <span>
+              Example units and every check-in detail behind each, with where each fact came from.
+            </span>
           </button>
           <button className="intro-card" onClick={() => onGo('help')}>
-            <b>Help / Ask</b>
+            <b>Help / Ask — the guest side</b>
             <span>Pick a unit and ask it anything. It only answers from that unit's record.</span>
           </button>
         </div>

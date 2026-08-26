@@ -1,30 +1,34 @@
-# Landing — Property Concierge & Auto-Onboarding
+# Landing — Check-in, solved from both ends
 
-Corporate housing runs on operational trivia. Every unit has its own door lock,
-its own garage code, its own place where the remote lives. Across thousands of
-homes that's hundreds of thousands of facts that no static handbook keeps current.
+Corporate housing breaks at check-in. A guest lands at 11pm outside a building
+they have never seen: which door, is there a code or a fob or a lockbox, where
+does the garage remote live, what is the Wi-Fi. Every property answers
+differently — a keypad here, a Schlage lock there, a key under a plant beside
+the main door. There is no template, and there are thousands of units.
 
-This app does two things:
+That one problem has two halves.
 
-**1. Answers guest questions** about one specific property, grounded strictly in
-that property's record — never inventing a code, always deferring to the property
-contact when the data doesn't cover the question.
+**Getting check-in details to the guest.** Today they call or text someone and
+wait, usually while standing at a door they cannot open.
 
-**2. Collects the data in the first place**, which is the harder half:
+**Getting the details in the first place** — the harder half. Roughly 25 facts
+per unit, most of them living only in one busy property manager's head.
+
+This prototype does both:
 
 ```
-Address ──▶ web enrichment ──▶ gap analysis ──▶ AI voice call to the
-                                                property contact
-                                                      │
-        property record ◀── auto-publish ◀── LLM extraction
+Address ──▶ web enrichment ──▶ what's still missing ──▶ AI voice call to
+                                                        the property contact
+                                                              │
+        property record ◀── auto-publish ◀── LLM extraction ◀─┘
                 │
-                └──▶ concierge chat
+                └──▶ guest asks "where's the garage remote?"
 ```
 
 Public facts (address, beds/baths, amenities, general parking) are researched
-automatically. Whatever is left — the operational details only the property
-manager knows — is gathered by an AI agent that places a real phone call and has
-a natural conversation, then extracts the structured fields from the transcript.
+automatically. Whatever is left — the check-in details only the property manager
+knows — is gathered by an AI agent that places a real phone call and has a
+natural conversation, then extracts the structured fields from the transcript.
 The agent is briefed only on the fields still missing, so calls stay short and
 never feel like a questionnaire.
 
