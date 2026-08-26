@@ -12,30 +12,62 @@
 import { supabase, isConfigured } from './supabase.js'
 import { SAMPLE_CALL } from './sample-call.js'
 
+const PINNED = process.env.DEMO_REPLAY_CALL_ID || ''
+
+function shape(row) {
+  return {
+    kind: 'recording',
+    recordedAt: row.created_at,
+    propertyId: row.property_id,
+    transcript: row.transcript,
+    applied: row.extracted?.applied || [],
+  }
+}
+
+const usable = (row) => row?.transcript && row.transcript.trim().length > 200
+
 /**
- * The most recent real call that produced a transcript, or the bundled sample
- * if no real call has been made yet.
+ * The recording to show when a live call cannot be placed: the pinned call if
+ * DEMO_REPLAY_CALL_ID is set, otherwise whichever real call captured the most,
+ * falling back to the written sample if none exists yet.
  */
 export async function getReplay() {
   if (isConfigured()) {
+    // Pinning one call is the safe option for a link that is out in the world:
+    // it cannot be displaced by whatever happens next.
+    if (PINNED) {
+      const { data, error } = await supabase()
+        .from('calls')
+        .select('id, transcript, extracted, created_at, property_id')
+        .eq('id', PINNED)
+        .maybeSingle()
+      if (error) console.error('[replay] pinned call lookup failed:', error.message)
+      else if (usable(data)) return shape(data)
+      else console.error(`[replay] DEMO_REPLAY_CALL_ID=${PINNED} is not a usable recording`)
+    }
+
     const { data, error } = await supabase()
       .from('calls')
       .select('id, transcript, extracted, created_at, property_id')
       .not('transcript', 'is', null)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
+      .limit(25)
 
     if (error) {
       console.error('[replay] lookup failed, using sample:', error.message)
-    } else if (data && data.transcript && data.transcript.trim().length > 80) {
-      return {
-        kind: 'recording',
-        recordedAt: data.created_at,
-        propertyId: data.property_id,
-        transcript: data.transcript,
-        applied: data.extracted?.applied || [],
-      }
+    } else if (data?.length) {
+      // NOT the most recent. A visitor who answers and hangs up after twenty
+      // seconds produces a real transcript, and taking the newest would let
+      // that replace a good recording for everyone who opens the link after
+      // them. Rank by how much the call actually captured instead.
+      const best = data
+        .filter(usable)
+        .sort(
+          (a, b) =>
+            (b.extracted?.applied?.length || 0) - (a.extracted?.applied?.length || 0) ||
+            b.transcript.length - a.transcript.length
+        )[0]
+      if (best) return shape(best)
     }
   }
 
