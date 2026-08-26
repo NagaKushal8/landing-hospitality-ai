@@ -98,7 +98,11 @@ export const FIELDS = [
     origin: 'both', type: 'string', card: true,
     voiceTopic: 'whether there is a pool and how guests get to it',
   },
-  { key: 'pool.notes', label: 'Pool notes', section: 'Pool', group: 'amenities', origin: 'both', type: 'string' },
+  {
+    key: 'pool.notes', label: 'Pool notes', section: 'Pool', group: 'amenities',
+    origin: 'both', type: 'string',
+    voiceTopic: 'pool hours or rules guests should know',
+  },
   {
     key: 'gym', label: 'Gym / fitness', section: 'Gym / fitness', group: 'amenities',
     origin: 'both', type: 'string', card: true,
@@ -228,6 +232,9 @@ export const voiceFields = () => FIELDS.filter((f) => f.origin === 'voice' || f.
 // nothing else, so it never re-asks something already known.
 export function computeGaps(home) {
   return voiceFields().filter((f) => {
+    // A field with no voiceTopic cannot be put to the agent, so it is not a
+    // gap a call can close — leaving it in would brief the agent on undefined.
+    if (!f.voiceTopic) return false
     const parent = f.key.includes('.') ? f.key.split('.')[0] : null
     // An explicit null parent is an answer ("no pool"), not a gap.
     if (parent && home[parent] === null) return false
