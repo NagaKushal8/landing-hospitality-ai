@@ -12,7 +12,8 @@
     "start": "vercel dev",
     "call:prompt": "node scripts/call-prompt.js",
     "bland:check": "node scripts/bland-check.js",
-    "calls:list": "node scripts/calls-list.js"
+    "calls:list": "node scripts/calls-list.js",
+    "budget": "node scripts/budget.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.4",

@@ -10,8 +10,8 @@
 // not a database, but a way to ask one.
 
 const COMPANY_STEPS = [
-  ['1', 'Look it up', 'You give it an address. It finds whatever the building has online.'],
-  ['2', 'Find the gaps', "Nobody puts a door code on a website. Whatever it can't find becomes a short list."],
+  ['1', 'Look it up', 'You give it an address. It finds whatever the building has online and saves it.'],
+  ['2', 'Find the gaps', "Whatever information cannot be found online is added to a prioritized shortlist. During the call, the most important items are addressed first, and consent is requested before filling in any additional details if time permits."],
   [
     '3',
     'Call the contact',
@@ -68,7 +68,7 @@ export default function Intro({ onGo }) {
         </div>
       </section>
 
-      <h1 className="intro-h1">How it helps</h1>
+      <h1 className="intro-h1">How this helps</h1>
 
       <section className="intro-block">
         <Flow side="company" label="Company side: getting details in" steps={COMPANY_STEPS} />
@@ -80,7 +80,7 @@ export default function Intro({ onGo }) {
         <div className="intro-cards">
           <button className="intro-card" onClick={() => onGo('onboard')}>
             <b>Onboard</b>
-            <span>Type an address, then have it call a number you pick. This is the part that's new.</span>
+            <span>Type an address, then have it call a number you pick.</span>
           </button>
           <button className="intro-card" onClick={() => onGo('list')}>
             <b>Doors</b>
