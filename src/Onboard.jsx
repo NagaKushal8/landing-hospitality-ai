@@ -311,7 +311,7 @@ export default function Onboard({ onOpenHelp }) {
           <div className="scope-picker">
             {[
               { id: 'critical', n: criticalGaps.length, label: 'Critical only', why: 'access, codes, Wi-Fi, emergency' },
-              { id: 'all', n: gaps.length, label: 'Everything missing', why: 'adds trash, laundry, checkout, amenities' },
+              { id: 'all', n: gaps.length, label: 'Ask to continue', why: 'critical first, then the rest only with consent' },
             ].map((opt) => (
               <button
                 key={opt.id}
@@ -327,8 +327,19 @@ export default function Onboard({ onOpenHelp }) {
             ))}
           </div>
           <p className="hint">
-            Asking <b>{askCount}</b> topics — roughly a <b>{estMinutes}-minute</b> call. Whatever is left stays a
-            gap, and another call can pick it up later.
+            {scope === 'critical' ? (
+              <>
+                Asking the <b>{criticalGaps.length} critical</b> topics only — roughly a{' '}
+                <b>{estMinutes}-minute</b> call. The rest stay as gaps for a later call.
+              </>
+            ) : (
+              <>
+                The agent covers the <b>{criticalGaps.length} critical</b> topics first, then <i>asks permission</i>{' '}
+                before continuing to the other <b>{otherGaps.length}</b>. If the contact declines it ends there —
+                so this is a <b>{Math.max(2, Math.round((criticalGaps.length * 20 + 40) / 60))}-minute</b> call that
+                only runs to <b>{estMinutes}</b> if they agree.
+              </>
+            )}
           </p>
 
           <div className="call-row">
