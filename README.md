@@ -168,6 +168,16 @@ Two things worth knowing before you demo this live:
 - **A free Vapi number has no reputation**, so it may show up as an unknown
   number or get filtered. Have your phone in hand and expect to answer a number
   you do not recognise.
+- **Free Vapi numbers have a daily outbound call limit**, and rehearsing will hit
+  it faster than you expect. The failure is explicit — *"Numbers Bought On Vapi
+  Have A Daily Outbound Call Limit"* — and the app translates it into what to do.
+  If you are demoing tomorrow, import a Twilio number today rather than
+  discovering the cap during the meeting: Twilio trial credit covers a US number
+  for about a dollar, then Vapi Dashboard -> Phone Numbers -> Import, and put the
+  imported number's id in `VAPI_PHONE_NUMBER_ID`. Imported numbers have no cap.
+  Note that a Twilio *trial* account can only dial numbers you have verified in
+  Twilio — fine when you are calling your own phone, a problem the first time you
+  call a real property contact, so upgrade before that.
 - **`VAPI_MAX_SECONDS` caps the call** at 8 minutes by default. Calls bill per
   minute, so that is the backstop against one that goes sideways with nobody
   watching.

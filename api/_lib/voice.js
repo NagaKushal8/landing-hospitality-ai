@@ -26,6 +26,45 @@ export function isConfigured() {
   return Boolean(process.env.VAPI_API_KEY && process.env.VAPI_PHONE_NUMBER_ID)
 }
 
+// Vapi's failures are mostly operational rather than programming errors — a
+// spent daily quota, an unverified number, no credit left. Raw JSON in a red
+// box makes those read like a crash, so translate the ones that actually
+// happen into what to do about them.
+function explainVapiError(status, text) {
+  let payload = {}
+  try {
+    payload = JSON.parse(text)
+  } catch {
+    /* not JSON — fall through to the raw text */
+  }
+  const msg = String(payload.message || text || '')
+  const low = msg.toLowerCase()
+
+  if (low.includes('daily outbound call limit')) {
+    return (
+      'Vapi will not place the call: free Vapi numbers have a daily outbound limit and this one has hit it. ' +
+      'Either wait for it to reset (24h), or import a Twilio number in the Vapi dashboard ' +
+      '(Phone Numbers -> Import) and put its id in VAPI_PHONE_NUMBER_ID — imported numbers have no such cap.'
+    )
+  }
+  if (low.includes('insufficient') || low.includes('credit') || low.includes('balance')) {
+    return `Vapi rejected the call for billing reasons: ${msg}. Check the credit balance in the Vapi dashboard.`
+  }
+  if (status === 401 || status === 403) {
+    return (
+      'Vapi rejected the API key. POST /call is privately scoped, so it needs the PRIVATE key from ' +
+      'Dashboard -> API Keys — the public key only works for web calls.'
+    )
+  }
+  if (low.includes('phonenumberid') || low.includes('phone number')) {
+    return `Vapi did not accept the phone number id: ${msg}. VAPI_PHONE_NUMBER_ID must be the number's UUID, not the phone number itself.`
+  }
+  if (low.includes('customer') || low.includes('e164') || low.includes('invalid number')) {
+    return `Vapi did not accept the number being dialled: ${msg}.`
+  }
+  return `Vapi ${status}: ${msg.slice(0, 300)}`
+}
+
 async function vapi(path, { method = 'GET', body } = {}) {
   const res = await fetch(`${BASE}${path}`, {
     method,
@@ -36,7 +75,11 @@ async function vapi(path, { method = 'GET', body } = {}) {
     ...(body ? { body: JSON.stringify(body) } : {}),
   })
   const text = await res.text()
-  if (!res.ok) throw new Error(`Vapi ${method} ${path} → ${res.status}: ${text.slice(0, 300)}`)
+  if (!res.ok) {
+    // Keep the raw body in the server log; the caller gets the readable version.
+    console.error(`[vapi] ${method} ${path} -> ${res.status}: ${text.slice(0, 500)}`)
+    throw new Error(explainVapiError(res.status, text))
+  }
   return text ? JSON.parse(text) : {}
 }
 
