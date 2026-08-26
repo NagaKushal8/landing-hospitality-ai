@@ -173,18 +173,25 @@ Two things worth knowing before you demo this live:
   On Vapi Have A Daily Outbound Call Limit"* — and the app translates it into
   what to do. Two ways out, cheapest first:
 
-  1. **Add a payment method to Vapi.** This is pay-as-you-go: **no monthly fee**,
-     you are billed per minute only. Vapi's own docs say a payment method is
-     required for additional free numbers, so the cap reads as an anti-abuse
-     gate on card-less accounts rather than a plan feature — but Vapi does not
-     document it either way, so treat it as worth trying, not guaranteed. It
-     costs nothing to find out. **Do not buy the $99/mo Team plan** — it is a
-     concurrency and support tier and will not change this.
+  1. **Top up Vapi ($10 minimum).** No monthly fee, but pay-as-you-go requires a
+     $10 minimum credit purchase. That is prepayment, not a fee: Vapi's
+     per-minute platform charge draws from it whichever number you end up using,
+     so it is not wasted even if you later import Twilio. Their docs say a
+     payment method is required for additional free numbers, and an account
+     rejected on its very first call is a payment gate rather than a spent
+     allowance — strong evidence, though Vapi does not document it outright.
+     **Do not buy the $99/mo Team plan**; it is a concurrency tier and changes
+     nothing here.
   2. **Import a Twilio number.** $1.15/mo, definitively uncapped, and what the
      error itself recommends. Vapi Dashboard -> Phone Numbers -> Import, then put
-     the imported number's id in `VAPI_PHONE_NUMBER_ID`. A Twilio *trial* account
-     can only dial numbers you have verified in Twilio — fine for calling your
-     own phone, a problem the first time you call a real property contact.
+     the imported number's id in `VAPI_PHONE_NUMBER_ID`. The catch: a Twilio
+     *trial* account can only dial **verified** numbers (up to 5, each verified
+     by a code sent to that number). Enough to call your own phone and record a
+     good demo call; not enough to let a stranger open the link and have their
+     own phone ring, which needs a paid Twilio account.
+
+  `npm run vapi:check` reports which kind of number you are on — `provider: vapi`
+  is the capped kind, `provider: twilio` is the imported one.
 - **`VAPI_MAX_SECONDS` caps the call** at 8 minutes by default. Calls bill per
   minute, so that is the backstop against one that goes sideways with nobody
   watching.
@@ -232,3 +239,7 @@ Plus $1.15/month for the Twilio number itself.
 So a rehearsal plus a live demo is comfortably under $5, and Vapi's $10 signup
 credit covers it. `VAPI_MODEL=gpt-4o-mini` is the biggest single lever if you
 are iterating on the prompt across many calls.
+
+Note that Vapi requires a $10 minimum credit purchase to enable outbound
+calling beyond the free tier. It is prepaid usage rather than a subscription,
+and `DEMO_BUDGET_USD` caps what the deployed link can actually spend of it.
