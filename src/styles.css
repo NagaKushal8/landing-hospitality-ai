@@ -423,7 +423,7 @@ body {
 
 /* ---- Intro ------------------------------------------------------------- */
 .intro { max-width: 720px; }
-.intro-lede { margin-bottom: 34px; }
+.intro-lede { margin-bottom: 26px; }
 .intro-lede h1 { margin: 0 0 12px; font-size: 30px; line-height: 1.2; letter-spacing: -0.01em; }
 .intro-lede p { margin: 0 0 12px; color: var(--muted); line-height: 1.65; font-size: 15px; }
 .intro-lede p:last-child { margin-bottom: 0; }

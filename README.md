@@ -1,8 +1,5 @@
 # Landing — Improving the check-in experience
 
-A guest gets to the building at 11pm. Which door? Is there a code, a fob, a
-lockbox? Where's the garage remote?
-
 **Guest side.** The details are sent, in an email or a check-in doc. At the door
 that means scrolling a PDF for one code. There, but not very handy.
 

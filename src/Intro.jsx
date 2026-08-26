@@ -46,10 +46,6 @@ export default function Intro({ onGo }) {
     <div className="screen intro">
       <div className="intro-lede">
         <h1>Improving the check-in experience</h1>
-        <p>
-          A guest gets to the building at 11pm. Which door? Is there a code, a fob, a lockbox? Where's
-          the garage remote?
-        </p>
       </div>
 
       <section className="intro-block">
